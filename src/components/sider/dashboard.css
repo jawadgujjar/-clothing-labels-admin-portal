@@ -1,0 +1,37 @@
+/* dashboard.css */
+.dashboard-container {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+  }
+  
+  .dashboard-card {
+    flex: 1;
+    margin: 10px;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.3s;
+  }
+  
+  .dashboard-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .dashboard-card-user {
+    background-color: #f0f8ff; /* Light blue */
+  }
+  
+  .dashboard-card-orders {
+    background-color: #ffe4e1; /* Light pink */
+  }
+  
+  .dashboard-card-products {
+    background-color: #f5f5dc; /* Light beige */
+  }
+  
+  .dashboard-card-balance {
+    background-color: #e6e6fa; /* Light lavender */
+  }
+  
