@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, Routes, Route } from "react-router-dom"; 
+import { Link, Routes, Route } from "react-router-dom";
 import {
   UserOutlined,
   ShoppingCartOutlined,
@@ -7,16 +7,25 @@ import {
   EditOutlined,
   AppstoreAddOutlined,
   ShopOutlined, // Icon for All Clothing
-  TagOutlined,  // Icon for All Hang Tags
+  TagOutlined, // Icon for All Hang Tags
 } from "@ant-design/icons";
 import { Layout, Menu, theme } from "antd";
 import Users1 from "../users";
 import Dashboard from "./dashboard"; // Make sure this path is correct
 import AllCloth1 from "../allclothing";
+import AllHangtags1 from "../allhangtags";
 
 // Example components for each route
-const Users = () => <div><Users1 /></div>;
-const AllClothing = () => <div>< AllCloth1/></div>;
+const Users = () => (
+  <div>
+    <Users1 />
+  </div>
+);
+const AllClothing = () => (
+  <div>
+    <AllCloth1 />
+  </div>
+);
 const AllHangTags = () => <div>This is All Hang Tags Content</div>;
 const Orders = () => <div>This is Orders Content</div>;
 const GetAQuote = () => <div>This is Get a Quote Content</div>;
@@ -34,7 +43,7 @@ const Sider1 = () => {
     <Layout style={{ minHeight: "100vh" }}>
       <Sider
         collapsible
-        collapsed={collapsed} 
+        collapsed={collapsed}
         onCollapse={(value) => setCollapsed(value)}
       >
         <div className="demo-logo-vertical" />
@@ -57,12 +66,16 @@ const Sider1 = () => {
           <Menu.Item key="11" icon={<EditOutlined />}>
             <Link to="/blog-management">Blog Management</Link>
           </Menu.Item>
-          <Menu.SubMenu key="products" icon={<AppstoreAddOutlined />} title="Products">
+          <Menu.SubMenu
+            key="products"
+            icon={<AppstoreAddOutlined />}
+            title="Products"
+          >
             <Menu.Item key="2" icon={<ShopOutlined />}>
               <Link to="/all-clothing">All Clothing</Link>
             </Menu.Item>
             <Menu.Item key="6" icon={<TagOutlined />}>
-              <Link to="/6">All Hang Tags</Link>
+              <Link to="/all-hangtags">All Hang Tags</Link>
             </Menu.Item>
           </Menu.SubMenu>
         </Menu>
@@ -81,10 +94,11 @@ const Sider1 = () => {
         </Header>
         <Content style={{ margin: "16px" }}>
           <Routes>
-            <Route path="/" element={<Dashboard />} /> {/* Route for Dashboard */}
+            <Route path="/" element={<Dashboard />} />{" "}
+            {/* Route for Dashboard */}
             <Route path="/users" element={<Users />} />
             <Route path="/all-clothing" element={<AllClothing />} />
-            <Route path="/6" element={<AllHangTags />} />
+            <Route path="/all-hangtags" element={<AllHangtags1 />} />
             <Route path="/orders" element={<Orders />} />
             <Route path="/get-a-quote" element={<GetAQuote />} />
             <Route path="/blog-management" element={<BlogManagement />} />
