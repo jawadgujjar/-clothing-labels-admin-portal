@@ -26,7 +26,12 @@ const AllClothing = () => (
     <AllCloth1 />
   </div>
 );
-const AllHangTags = () => <div>This is All Hang Tags Content</div>;
+const AllHangTags = () => (
+  <div>
+    <AllHangtags1 />
+  </div>
+);
+// const AllHangTags = () => <div>This is All Hang Tags Content</div>;
 const Orders = () => <div>This is Orders Content</div>;
 const GetAQuote = () => <div>This is Get a Quote Content</div>;
 const BlogManagement = () => <div>This is Blog Management Content</div>;
@@ -98,7 +103,7 @@ const Sider1 = () => {
             {/* Route for Dashboard */}
             <Route path="/users" element={<Users />} />
             <Route path="/all-clothing" element={<AllClothing />} />
-            <Route path="/all-hangtags" element={<AllHangtags1 />} />
+            <Route path="/all-hangtags" element={<AllHangTags />} />
             <Route path="/orders" element={<Orders />} />
             <Route path="/get-a-quote" element={<GetAQuote />} />
             <Route path="/blog-management" element={<BlogManagement />} />

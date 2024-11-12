@@ -21,7 +21,26 @@ const AllCloth1 = () => {
   const [newImage, setNewImage] = useState(null);
   const [newStyle, setNewStyle] = useState(null);
   const [newSize, setNewSize] = useState(null);
+  const [newVersion, setNewVersion] = useState(null);
+  const [newProof, setNewProof] = useState(null);
+  const [newTurn, setNewTurn] = useState(null);
+  const [newBacking, setNewBacking] = useState(null);
+  const [newMetallic, setNewMetallic] = useState(null);
+  const [newSatin, setNewSatin] = useState(null);
+  const [newPrint, setNewPrint] = useState(null);
+  const [newCotton, setNewCotton] = useState(null);
   const [newTitle, setNewTitle] = useState("");
+
+  const [newTitle1, setNewTitle1] = useState("");
+  const [newTitle2, setNewTitle2] = useState("");
+  const [newTitle3, setNewTitle3] = useState("");
+  const [newTitle4, setNewTitle4] = useState("");
+  const [newTitle5, setNewTitle5] = useState("");
+  const [newTitle6, setNewTitle6] = useState("");
+  const [newTitle7, setNewTitle7] = useState("");
+  const [newTitle8, setNewTitle8] = useState("");
+  const [newTitle9, setNewTitle9] = useState("");
+
   const [newDescription, setNewDescription] = useState("");
   const [currentProduct, setCurrentProduct] = useState(null); // Current product being edited
   const { token } = theme.useToken();
@@ -57,6 +76,94 @@ const AllCloth1 = () => {
       const reader = new FileReader();
       reader.onload = (e) => {
         setNewSize(e.target.result);
+      };
+      reader.readAsDataURL(file.originFileObj);
+    }
+  };
+  const handleversionChange = ({ file }) => {
+    if (file.status === "done") {
+      setNewImage(file.response.url); // Assuming the file response contains a URL
+    } else if (file.status === "uploading") {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setNewVersion(e.target.result);
+      };
+      reader.readAsDataURL(file.originFileObj);
+    }
+  };
+  const handleproofChange = ({ file }) => {
+    if (file.status === "done") {
+      setNewImage(file.response.url); // Assuming the file response contains a URL
+    } else if (file.status === "uploading") {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setNewProof(e.target.result);
+      };
+      reader.readAsDataURL(file.originFileObj);
+    }
+  };
+  const handleturnChange = ({ file }) => {
+    if (file.status === "done") {
+      setNewImage(file.response.url); // Assuming the file response contains a URL
+    } else if (file.status === "uploading") {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setNewTurn(e.target.result);
+      };
+      reader.readAsDataURL(file.originFileObj);
+    }
+  };
+  const handlebackingChange = ({ file }) => {
+    if (file.status === "done") {
+      setNewImage(file.response.url); // Assuming the file response contains a URL
+    } else if (file.status === "uploading") {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setNewBacking(e.target.result);
+      };
+      reader.readAsDataURL(file.originFileObj);
+    }
+  };
+  const handlemetallicChange = ({ file }) => {
+    if (file.status === "done") {
+      setNewImage(file.response.url); // Assuming the file response contains a URL
+    } else if (file.status === "uploading") {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setNewMetallic(e.target.result);
+      };
+      reader.readAsDataURL(file.originFileObj);
+    }
+  };
+  const handlesatinChange = ({ file }) => {
+    if (file.status === "done") {
+      setNewImage(file.response.url); // Assuming the file response contains a URL
+    } else if (file.status === "uploading") {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setNewSatin(e.target.result);
+      };
+      reader.readAsDataURL(file.originFileObj);
+    }
+  };
+  const handleprintChange = ({ file }) => {
+    if (file.status === "done") {
+      setNewImage(file.response.url); // Assuming the file response contains a URL
+    } else if (file.status === "uploading") {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setNewPrint(e.target.result);
+      };
+      reader.readAsDataURL(file.originFileObj);
+    }
+  };
+  const handlecottonChange = ({ file }) => {
+    if (file.status === "done") {
+      setNewImage(file.response.url); // Assuming the file response contains a URL
+    } else if (file.status === "uploading") {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setNewCotton(e.target.result);
       };
       reader.readAsDataURL(file.originFileObj);
     }
@@ -186,8 +293,8 @@ const AllCloth1 = () => {
           {/* Title Input Field */}
           <Input
             placeholder="Enter style title"
-            value={newTitle}
-            onChange={(e) => setNewTitle(e.target.value)} // This binds the title input to state
+            value={newTitle1}
+            onChange={(e) => setNewTitle1(e.target.value)} // This binds the title input to state
             style={{ marginTop: "10px" }}
           />
         </div>
@@ -204,7 +311,7 @@ const AllCloth1 = () => {
             action="your_upload_endpoint" // Replace with your actual upload endpoint
             listType="picture-card"
             showUploadList={false}
-            onChange={handleImageChange} // This is a function to handle image change
+            onChange={handleversionChange} // This is a function to handle image change
           >
             <div>
               <PlusOutlined />
@@ -216,7 +323,7 @@ const AllCloth1 = () => {
           {newImage && (
             <div style={{ marginTop: "10px" }}>
               <img
-                src={newImage}
+                src={newVersion}
                 alt="Uploaded Style"
                 style={{ width: "100px", height: "100px", objectFit: "cover" }}
               />
@@ -226,8 +333,8 @@ const AllCloth1 = () => {
           {/* Title Input Field */}
           <Input
             placeholder="Enter style title"
-            value={newTitle}
-            onChange={(e) => setNewTitle(e.target.value)} // This binds the title input to state
+            value={newTitle2}
+            onChange={(e) => setNewTitle2(e.target.value)} // This binds the title input to state
             style={{ marginTop: "10px" }}
           />
         </div>
@@ -244,7 +351,7 @@ const AllCloth1 = () => {
             action="your_upload_endpoint" // Replace with your actual upload endpoint
             listType="picture-card"
             showUploadList={false}
-            onChange={handleImageChange} // This is a function to handle image change
+            onChange={handleproofChange} // This is a function to handle image change
           >
             <div>
               <PlusOutlined />
@@ -256,7 +363,7 @@ const AllCloth1 = () => {
           {newImage && (
             <div style={{ marginTop: "10px" }}>
               <img
-                src={newImage}
+                src={newProof}
                 alt="Uploaded Style"
                 style={{ width: "100px", height: "100px", objectFit: "cover" }}
               />
@@ -266,8 +373,8 @@ const AllCloth1 = () => {
           {/* Title Input Field */}
           <Input
             placeholder="Enter style title"
-            value={newTitle}
-            onChange={(e) => setNewTitle(e.target.value)} // This binds the title input to state
+            value={newTitle3}
+            onChange={(e) => setNewTitle3(e.target.value)} // This binds the title input to state
             style={{ marginTop: "10px" }}
           />
         </div>
@@ -284,7 +391,7 @@ const AllCloth1 = () => {
             action="your_upload_endpoint" // Replace with your actual upload endpoint
             listType="picture-card"
             showUploadList={false}
-            onChange={handleImageChange} // This is a function to handle image change
+            onChange={handleturnChange} // This is a function to handle image change
           >
             <div>
               <PlusOutlined />
@@ -296,7 +403,7 @@ const AllCloth1 = () => {
           {newImage && (
             <div style={{ marginTop: "10px" }}>
               <img
-                src={newImage}
+                src={newTurn}
                 alt="Uploaded Style"
                 style={{ width: "100px", height: "100px", objectFit: "cover" }}
               />
@@ -306,8 +413,8 @@ const AllCloth1 = () => {
           {/* Title Input Field */}
           <Input
             placeholder="Enter style title"
-            value={newTitle}
-            onChange={(e) => setNewTitle(e.target.value)} // This binds the title input to state
+            value={newTitle4}
+            onChange={(e) => setNewTitle4(e.target.value)} // This binds the title input to state
             style={{ marginTop: "10px" }}
           />
         </div>
@@ -324,7 +431,7 @@ const AllCloth1 = () => {
             action="your_upload_endpoint" // Replace with your actual upload endpoint
             listType="picture-card"
             showUploadList={false}
-            onChange={handleImageChange} // This is a function to handle image change
+            onChange={handlebackingChange} // This is a function to handle image change
           >
             <div>
               <PlusOutlined />
@@ -336,7 +443,7 @@ const AllCloth1 = () => {
           {newImage && (
             <div style={{ marginTop: "10px" }}>
               <img
-                src={newImage}
+                src={newBacking}
                 alt="Uploaded Style"
                 style={{ width: "100px", height: "100px", objectFit: "cover" }}
               />
@@ -346,8 +453,8 @@ const AllCloth1 = () => {
           {/* Title Input Field */}
           <Input
             placeholder="Enter style title"
-            value={newTitle}
-            onChange={(e) => setNewTitle(e.target.value)} // This binds the title input to state
+            value={newTitle5}
+            onChange={(e) => setNewTitle5(e.target.value)} // This binds the title input to state
             style={{ marginTop: "10px" }}
           />
         </div>
@@ -364,7 +471,7 @@ const AllCloth1 = () => {
             action="your_upload_endpoint" // Replace with your actual upload endpoint
             listType="picture-card"
             showUploadList={false}
-            onChange={handleImageChange} // This is a function to handle image change
+            onChange={handlemetallicChange} // This is a function to handle image change
           >
             <div>
               <PlusOutlined />
@@ -376,7 +483,7 @@ const AllCloth1 = () => {
           {newImage && (
             <div style={{ marginTop: "10px" }}>
               <img
-                src={newImage}
+                src={newMetallic}
                 alt="Uploaded Style"
                 style={{ width: "100px", height: "100px", objectFit: "cover" }}
               />
@@ -386,8 +493,8 @@ const AllCloth1 = () => {
           {/* Title Input Field */}
           <Input
             placeholder="Enter style title"
-            value={newTitle}
-            onChange={(e) => setNewTitle(e.target.value)} // This binds the title input to state
+            value={newTitle6}
+            onChange={(e) => setNewTitle6(e.target.value)} // This binds the title input to state
             style={{ marginTop: "10px" }}
           />
         </div>
@@ -404,7 +511,7 @@ const AllCloth1 = () => {
             action="your_upload_endpoint" // Replace with your actual upload endpoint
             listType="picture-card"
             showUploadList={false}
-            onChange={handleImageChange} // This is a function to handle image change
+            onChange={handlesatinChange} // This is a function to handle image change
           >
             <div>
               <PlusOutlined />
@@ -416,7 +523,7 @@ const AllCloth1 = () => {
           {newImage && (
             <div style={{ marginTop: "10px" }}>
               <img
-                src={newImage}
+                src={newSatin}
                 alt="Uploaded Style"
                 style={{ width: "100px", height: "100px", objectFit: "cover" }}
               />
@@ -426,8 +533,8 @@ const AllCloth1 = () => {
           {/* Title Input Field */}
           <Input
             placeholder="Enter style title"
-            value={newTitle}
-            onChange={(e) => setNewTitle(e.target.value)} // This binds the title input to state
+            value={newTitle7}
+            onChange={(e) => setNewTitle7(e.target.value)} // This binds the title input to state
             style={{ marginTop: "10px" }}
           />
         </div>
@@ -444,7 +551,7 @@ const AllCloth1 = () => {
             action="your_upload_endpoint" // Replace with your actual upload endpoint
             listType="picture-card"
             showUploadList={false}
-            onChange={handleImageChange} // This is a function to handle image change
+            onChange={handleprintChange} // This is a function to handle image change
           >
             <div>
               <PlusOutlined />
@@ -456,7 +563,7 @@ const AllCloth1 = () => {
           {newImage && (
             <div style={{ marginTop: "10px" }}>
               <img
-                src={newImage}
+                src={newPrint}
                 alt="Uploaded Style"
                 style={{ width: "100px", height: "100px", objectFit: "cover" }}
               />
@@ -466,8 +573,8 @@ const AllCloth1 = () => {
           {/* Title Input Field */}
           <Input
             placeholder="Enter style title"
-            value={newTitle}
-            onChange={(e) => setNewTitle(e.target.value)} // This binds the title input to state
+            value={newTitle8}
+            onChange={(e) => setNewTitle8(e.target.value)} // This binds the title input to state
             style={{ marginTop: "10px" }}
           />
         </div>
@@ -483,7 +590,7 @@ const AllCloth1 = () => {
             action="your_upload_endpoint" // Replace with your actual upload endpoint
             listType="picture-card"
             showUploadList={false}
-            onChange={handleImageChange} // This is a function to handle image change
+            onChange={handlecottonChange} // This is a function to handle image change
           >
             <div>
               <PlusOutlined />
@@ -495,7 +602,7 @@ const AllCloth1 = () => {
           {newImage && (
             <div style={{ marginTop: "10px" }}>
               <img
-                src={newImage}
+                src={newCotton}
                 alt="Uploaded Style"
                 style={{ width: "100px", height: "100px", objectFit: "cover" }}
               />
@@ -505,8 +612,8 @@ const AllCloth1 = () => {
           {/* Title Input Field */}
           <Input
             placeholder="Enter style title"
-            value={newTitle}
-            onChange={(e) => setNewTitle(e.target.value)} // This binds the title input to state
+            value={newTitle9}
+            onChange={(e) => setNewTitle9(e.target.value)} // This binds the title input to state
             style={{ marginTop: "10px" }}
           />
         </div>
@@ -628,7 +735,7 @@ const AllCloth1 = () => {
 
   return (
     <div>
-      <h2>All Hangtags Products</h2>
+      <h2>All Clothing Products</h2>
       <div
         style={{
           display: "flex",

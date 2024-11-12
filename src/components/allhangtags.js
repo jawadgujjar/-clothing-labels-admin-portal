@@ -10,75 +10,36 @@ import {
   theme,
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import "./allclothing.css";
 
 const steps = [
-  {
-    title: "Size",
-    content: <p>Size selection content...</p>,
-  },
-  {
-    title: "Style",
-    content: "Style content...",
-  },
-  {
-    title: "Versions",
-    content: "Versions content...",
-  },
-  {
-    title: "Proof Option",
-    content: "Proof option content...",
-  },
-  {
-    title: "Turnaround",
-    content: "Turnaround content...",
-  },
-  {
-    title: "Backing Options",
-    content: "Backing options content...",
-  },
-  {
-    title: "Metallic Threads",
-    content: "Metallic threads content...",
-  },
-  {
-    title: "Satin Material Color",
-    content: "Satin material color content...",
-  },
-  {
-    title: "Print Colors",
-    content: "Print colors content...",
-  },
-  {
-    title: "Cotton Material Colors",
-    content: "Cotton material colors content...",
-  },
+  { title: "Size", content: <p>Size selection content...</p> },
+  { title: "Style", content: "Style content..." },
+  { title: "Versions", content: "Versions content..." },
+  { title: "Proof Option", content: "Proof option content..." },
+  { title: "Turnaround", content: "Turnaround content..." },
+  { title: "Backing Options", content: "Backing options content..." },
+  { title: "Metallic Threads", content: "Metallic threads content..." },
+  { title: "Satin Material Color", content: "Satin material color content..." },
+  { title: "Print Colors", content: "Print colors content..." },
+  { title: "Cotton Material Colors", content: "Cotton material colors content..." },
 ];
 
 const AllHangtags1 = () => {
-  const [clothingItems, setClothingItems] = useState([]);
+  const [hangtagItems, setHangtagItems] = useState([]);
   const [isProductModalVisible, setIsProductModalVisible] = useState(false);
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isDescriptionModalVisible, setIsDescriptionModalVisible] = useState(false);
-  const [isEditModalVisible, setIsEditModalVisible] = useState(false); // New state for edit modal
   const [newImage, setNewImage] = useState(null);
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
-  const [currentProduct, setCurrentProduct] = useState(null); // Current product being edited
+  const [currentHangtag, setCurrentHangtag] = useState(null);
   const { token } = theme.useToken();
   const [current, setCurrent] = useState(0);
 
-  const next = () => {
-    setCurrent(current + 1);
-  };
+  const next = () => setCurrent(current + 1);
+  const prev = () => setCurrent(current - 1);
 
-  const prev = () => {
-    setCurrent(current - 1);
-  };
-
-  const items = steps.map((item) => ({
-    key: item.title,
-    title: item.title,
-  }));
+  const items = steps.map((item) => ({ key: item.title, title: item.title }));
 
   const contentStyle = {
     lineHeight: "260px",
@@ -90,20 +51,20 @@ const AllHangtags1 = () => {
     marginTop: 16,
   };
 
-  // Load clothing items from localStorage
+  // Load hangtag items from localStorage
   useEffect(() => {
-    const savedItems = localStorage.getItem("clothingItems");
+    const savedItems = localStorage.getItem("hangtagItems");
     if (savedItems) {
-      setClothingItems(JSON.parse(savedItems));
+      setHangtagItems(JSON.parse(savedItems));
     }
   }, []);
 
-  // Save clothing items to localStorage
+  // Save hangtag items to localStorage
   useEffect(() => {
-    if (clothingItems.length > 0) {
-      localStorage.setItem("clothingItems", JSON.stringify(clothingItems));
+    if (hangtagItems.length > 0) {
+      localStorage.setItem("hangtagItems", JSON.stringify(hangtagItems));
     }
-  }, [clothingItems]);
+  }, [hangtagItems]);
 
   const handleAddNewProduct = () => {
     setIsProductModalVisible(true);
@@ -112,17 +73,15 @@ const AllHangtags1 = () => {
   const handleProductOk = () => {
     if (newImage && newTitle) {
       const newItem = {
-        id: Date.now(), // Unique ID based on timestamp
+        id: Date.now(),
         imageUrl: newImage,
         title: newTitle,
-        description: "", // Initially empty description
+        description: "",
       };
-      setClothingItems((prevItems) => [...prevItems, newItem]);
+      setHangtagItems((prevItems) => [...prevItems, newItem]);
       setIsProductModalVisible(false);
       setNewImage(null);
       setNewTitle("");
-
-      // Open description modal after product is added
       setIsDescriptionModalVisible(true);
     } else {
       alert("Please provide both image and title!");
@@ -137,17 +96,15 @@ const AllHangtags1 = () => {
 
   const handleDescriptionOk = () => {
     if (newDescription) {
-      // Find the newly added product and update its description
-      const updatedItems = clothingItems.map((item) =>
-        item.id === clothingItems[clothingItems.length - 1].id
+      const updatedItems = hangtagItems.map((item) =>
+        item.id === hangtagItems[hangtagItems.length - 1].id
           ? { ...item, description: newDescription }
           : item
       );
-      setClothingItems(updatedItems);
-
+      setHangtagItems(updatedItems);
       setIsDescriptionModalVisible(false);
       setNewDescription("");
-    } else {
+ } else {
       alert("Please provide a description!");
     }
   };
@@ -170,29 +127,28 @@ const AllHangtags1 = () => {
   };
 
   const handleDelete = (id) => {
-    const updatedItems = clothingItems.filter((item) => item.id !== id);
-    setClothingItems(updatedItems);
+    const updatedItems = hangtagItems.filter((item) => item.id !== id);
+    setHangtagItems(updatedItems);
   };
 
-  // Handle Edit Product functionality
-  const handleEditProduct = (product) => {
-    setCurrentProduct(product);
-    setNewTitle(product.title);
-    setNewDescription(product.description);
-    setNewImage(product.imageUrl);
+  const handleEditProduct = (hangtag) => {
+    setCurrentHangtag(hangtag);
+    setNewTitle(hangtag.title);
+    setNewDescription(hangtag.description);
+    setNewImage(hangtag.imageUrl);
     setIsEditModalVisible(true);
   };
 
   const handleEditProductOk = () => {
     if (newImage && newTitle) {
-      const updatedItems = clothingItems.map((item) =>
-        item.id === currentProduct.id
+      const updatedItems = hangtagItems.map((item) =>
+        item.id === currentHangtag.id
           ? { ...item, imageUrl: newImage, title: newTitle, description: newDescription }
           : item
       );
-      setClothingItems(updatedItems);
+      setHangtagItems(updatedItems);
       setIsEditModalVisible(false);
-      setCurrentProduct(null);
+      setCurrentHangtag(null);
       setNewImage(null);
       setNewTitle("");
       setNewDescription("");
@@ -203,7 +159,7 @@ const AllHangtags1 = () => {
 
   const handleEditProductCancel = () => {
     setIsEditModalVisible(false);
-    setCurrentProduct(null);
+    setCurrentHangtag(null);
     setNewImage(null);
     setNewTitle("");
     setNewDescription("");
@@ -220,8 +176,8 @@ const AllHangtags1 = () => {
           gap: "20px",
         }}
       >
-        {clothingItems.length > 0 ? (
-          clothingItems.map((item) => (
+        {hangtagItems.length > 0 ? (
+          hangtagItems.map((item) => (
             <div key={item.id} className="allclothing-item">
               <div className="allclothing-buttons">
                 <Button
@@ -240,11 +196,10 @@ const AllHangtags1 = () => {
               <Card
                 className="allclothing-card"
                 hoverable
-                cover={<img alt="Clothing" src={item.imageUrl} />}
+                cover={<img alt="Hangtag" src={item.imageUrl} />}
               >
                 <h3 className="allclothing-title">{item.title}</h3>
-                {item.description && <p>{item.description}</p>}{" "}
-                {/* Display description if available */}
+                {item.description && <p>{item.description}</p>}
               </Card>
             </div>
           ))
@@ -264,7 +219,7 @@ const AllHangtags1 = () => {
 
       {/* Product Add Modal */}
       <Modal
-        title="Add New Product"
+        title="Add New Hangtag"
         visible={isProductModalVisible}
         onOk={handleProductOk}
         onCancel={handleProductCancel}
@@ -280,12 +235,12 @@ const AllHangtags1 = () => {
         {newImage && (
           <img
             src={newImage}
-            alt="New Product"
+            alt="New Hangtag"
             style={{ width: "100%", marginTop: "10px" }}
           />
         )}
         <Input
-          placeholder="Enter product title"
+          placeholder="Enter hangtag title"
           value={newTitle}
           onChange={(e) => setNewTitle(e.target.value)}
           style={{ marginTop: "10px" }}
@@ -310,18 +265,18 @@ const AllHangtags1 = () => {
         {newImage && (
           <img
             src={newImage}
-            alt="Product Image"
+            alt="Hangtag Image"
             style={{ width: "100%", marginTop: "10px" }}
           />
         )}
         <Input
-          placeholder="Enter product title"
+          placeholder="Enter hangtag title"
           value={newTitle}
           onChange={(e) => setNewTitle(e.target.value)}
           style={{ marginTop: "10px" }}
         />
         <Input.TextArea
-          placeholder="Enter product description"
+          placeholder="Enter hangtag description"
           value={newDescription}
           onChange={(e) => setNewDescription(e.target.value)}
           rows={4}
@@ -335,8 +290,8 @@ const AllHangtags1 = () => {
         visible={isDescriptionModalVisible}
         onOk={handleDescriptionOk}
         onCancel={handleDescriptionCancel}
-        width="80%" // Setting the modal width dynamically
-        style={{ maxWidth: "800px" }} // Ensures it's not too wide on larger screens
+        width="80%"
+        style={{ maxWidth: "800px" }}
         bodyStyle={{
           padding: "20px",
           display: "flex",
