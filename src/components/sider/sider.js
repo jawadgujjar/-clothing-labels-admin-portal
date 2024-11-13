@@ -14,6 +14,7 @@ import Users1 from "../users";
 import Dashboard from "./dashboard"; // Make sure this path is correct
 import AllCloth1 from "../allclothing";
 import AllHangtags1 from "../allhangtags";
+import Fancyhangtags1 from "../fancyhangtags";
 
 // Example components for each route
 const Users = () => (
@@ -29,6 +30,11 @@ const AllClothing = () => (
 const AllHangTags = () => (
   <div>
     <AllHangtags1 />
+  </div>
+);
+const FancyHangTags = () => (
+  <div>
+     <Fancyhangtags1/>
   </div>
 );
 // const AllHangTags = () => <div>This is All Hang Tags Content</div>;
@@ -82,6 +88,9 @@ const Sider1 = () => {
             <Menu.Item key="6" icon={<TagOutlined />}>
               <Link to="/all-hangtags">All Hang Tags</Link>
             </Menu.Item>
+            <Menu.Item key="7" icon={<TagOutlined />}>
+              <Link to="/fancy-hangtags">Fancy Hang Tags</Link>
+            </Menu.Item>
           </Menu.SubMenu>
         </Menu>
       </Sider>
@@ -104,6 +113,7 @@ const Sider1 = () => {
             <Route path="/users" element={<Users />} />
             <Route path="/all-clothing" element={<AllClothing />} />
             <Route path="/all-hangtags" element={<AllHangTags />} />
+            <Route path="/fancy-hangtags" element={<FancyHangTags />} />
             <Route path="/orders" element={<Orders />} />
             <Route path="/get-a-quote" element={<GetAQuote />} />
             <Route path="/blog-management" element={<BlogManagement />} />

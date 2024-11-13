@@ -30,7 +30,7 @@ const AllCloth1 = () => {
   const [newPrint, setNewPrint] = useState(null);
   const [newCotton, setNewCotton] = useState(null);
   const [newTitle, setNewTitle] = useState("");
-
+  const [newTitle0, setNewTitle0] = useState("");
   const [newTitle1, setNewTitle1] = useState("");
   const [newTitle2, setNewTitle2] = useState("");
   const [newTitle3, setNewTitle3] = useState("");
@@ -211,6 +211,14 @@ const AllCloth1 = () => {
       title: "Production Description",  // The step to add description input
       content: (
         <div>
+           <p style={{ fontWeight: 'bold', marginBottom: '5px' }}>Description Title</p>
+          {/* Description Title Input */}
+          <Input
+            value={newTitle0} // Binding input to state for title
+            onChange={(e) => setNewTitle0(e.target.value)} // Updating title state
+            placeholder="Enter description title"
+            style={{ marginBottom: '10px' }} // Adding some margin between inputs
+          />
           <p style={{fontSize:'1.5rem',fontWeight:'bold'}}>Enter the Description</p>
           <Input.TextArea
             value={newDescription}
