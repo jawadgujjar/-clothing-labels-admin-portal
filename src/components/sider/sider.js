@@ -15,6 +15,8 @@ import Dashboard from "./dashboard"; // Make sure this path is correct
 import AllCloth1 from "../allclothing";
 import AllHangtags1 from "../allhangtags";
 import Fancyhangtags1 from "../fancyhangtags";
+import Requestquote1 from "../requestquote";
+import Quote from "../quote";
 
 // Example components for each route
 const Users = () => (
@@ -37,9 +39,18 @@ const FancyHangTags = () => (
      <Fancyhangtags1/>
   </div>
 );
+const Requestquote = () => (
+  <div>
+     <Requestquote1/>
+  </div>
+);
+const GetAQuote = () => (
+  <div>
+     <Quote/>
+  </div>
+);
 // const AllHangTags = () => <div>This is All Hang Tags Content</div>;
 const Orders = () => <div>This is Orders Content</div>;
-const GetAQuote = () => <div>This is Get a Quote Content</div>;
 const BlogManagement = () => <div>This is Blog Management Content</div>;
 
 const { Header, Sider, Content } = Layout;
@@ -91,6 +102,9 @@ const Sider1 = () => {
             <Menu.Item key="7" icon={<TagOutlined />}>
               <Link to="/fancy-hangtags">Fancy Hang Tags</Link>
             </Menu.Item>
+            <Menu.Item key="8" icon={<TagOutlined />}>
+              <Link to="/request-quote">Request a quote</Link>
+            </Menu.Item>
           </Menu.SubMenu>
         </Menu>
       </Sider>
@@ -114,6 +128,7 @@ const Sider1 = () => {
             <Route path="/all-clothing" element={<AllClothing />} />
             <Route path="/all-hangtags" element={<AllHangTags />} />
             <Route path="/fancy-hangtags" element={<FancyHangTags />} />
+            <Route path="/request-quote" element={< Requestquote />} />
             <Route path="/orders" element={<Orders />} />
             <Route path="/get-a-quote" element={<GetAQuote />} />
             <Route path="/blog-management" element={<BlogManagement />} />

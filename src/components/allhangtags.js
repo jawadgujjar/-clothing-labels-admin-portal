@@ -9,13 +9,14 @@ import {
   Steps,
   theme,
 } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 
 const AllHangtags1 = () => {
   const [hangtagItems, setHangtagItems] = useState([]);
   const [isProductModalVisible, setIsProductModalVisible] = useState(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
-  const [isDescriptionModalVisible, setIsDescriptionModalVisible] = useState(false);
+  const [isDescriptionModalVisible, setIsDescriptionModalVisible] =
+    useState(false);
   const [newImage, setNewImage] = useState(null);
   const [newTitle, setNewTitle] = useState("");
   const [newTitle1, setNewTitle1] = useState("");
@@ -27,7 +28,8 @@ const AllHangtags1 = () => {
   const [newStylePaperQuestion, setNewStylePaperQuestion] = useState(""); // For Paper Question Image
   const [newStylePrintOption, setNewStylePrintOption] = useState(""); // For Print Option Image
   const [newStyleHolePunchSize, setNewStyleHolePunchSize] = useState(""); // For Hole Punch Size Image
-  const [newStyleHolePunchPosition, setNewStyleHolePunchPosition] = useState(""); // For Hole Punch Position Image
+  const [newStyleHolePunchPosition, setNewStyleHolePunchPosition] =
+    useState(""); // For Hole Punch Position Image
   const [newStyleStringColor, setNewStyleStringColor] = useState(""); // For String Color Image
   const [newStyleSafetyPinColor, setNewStyleSafetyPinColor] = useState(""); // For Safety Pin Color Image
   const [newStyleProofOption, setNewStyleProofOption] = useState(""); // For Proof Option Image
@@ -36,7 +38,8 @@ const AllHangtags1 = () => {
   const [newTitlePaperQuestion, setNewTitlePaperQuestion] = useState(""); // For Paper Question Title
   const [newTitlePrintOption, setNewTitlePrintOption] = useState(""); // For Print Option Title
   const [newTitleHolePunchSize, setNewTitleHolePunchSize] = useState(""); // For Hole Punch Size Title
-  const [newTitleHolePunchPosition, setNewTitleHolePunchPosition] = useState(""); // For Hole Punch Position Title
+  const [newTitleHolePunchPosition, setNewTitleHolePunchPosition] =
+    useState(""); // For Hole Punch Position Title
   const [newTitleStringColor, setNewTitleStringColor] = useState(""); // For String Color Title
   const [newTitleSafetyPinColor, setNewTitleSafetyPinColor] = useState(""); // For Safety Pin Color Title
   const [newTitleProofOption, setNewTitleProofOption] = useState(""); // For Proof Option Title
@@ -67,9 +70,9 @@ const AllHangtags1 = () => {
     }
   };
   const handlePaperQuestionChange = ({ file }) => {
-    if (file.status === 'done') {
+    if (file.status === "done") {
       setNewStylePaperQuestion(file.response.url); // Set Paper Question Image URL
-    } else if (file.status === 'uploading') {
+    } else if (file.status === "uploading") {
       const reader = new FileReader();
       reader.onload = (e) => setNewStylePaperQuestion(e.target.result);
       reader.readAsDataURL(file.originFileObj);
@@ -77,9 +80,9 @@ const AllHangtags1 = () => {
   };
 
   const handlePrintOptionChange = ({ file }) => {
-    if (file.status === 'done') {
+    if (file.status === "done") {
       setNewStylePrintOption(file.response.url); // Set Print Option Image URL
-    } else if (file.status === 'uploading') {
+    } else if (file.status === "uploading") {
       const reader = new FileReader();
       reader.onload = (e) => setNewStylePrintOption(e.target.result);
       reader.readAsDataURL(file.originFileObj);
@@ -87,9 +90,9 @@ const AllHangtags1 = () => {
   };
 
   const handleHolePunchSizeChange = ({ file }) => {
-    if (file.status === 'done') {
+    if (file.status === "done") {
       setNewStyleHolePunchSize(file.response.url); // Set Hole Punch Size Image URL
-    } else if (file.status === 'uploading') {
+    } else if (file.status === "uploading") {
       const reader = new FileReader();
       reader.onload = (e) => setNewStyleHolePunchSize(e.target.result);
       reader.readAsDataURL(file.originFileObj);
@@ -97,9 +100,9 @@ const AllHangtags1 = () => {
   };
 
   const handleHolePunchPositionChange = ({ file }) => {
-    if (file.status === 'done') {
+    if (file.status === "done") {
       setNewStyleHolePunchPosition(file.response.url); // Set Hole Punch Position Image URL
-    } else if (file.status === 'uploading') {
+    } else if (file.status === "uploading") {
       const reader = new FileReader();
       reader.onload = (e) => setNewStyleHolePunchPosition(e.target.result);
       reader.readAsDataURL(file.originFileObj);
@@ -107,9 +110,9 @@ const AllHangtags1 = () => {
   };
 
   const handleStringColorChange = ({ file }) => {
-    if (file.status === 'done') {
+    if (file.status === "done") {
       setNewStyleStringColor(file.response.url); // Set String Color Image URL
-    } else if (file.status === 'uploading') {
+    } else if (file.status === "uploading") {
       const reader = new FileReader();
       reader.onload = (e) => setNewStyleStringColor(e.target.result);
       reader.readAsDataURL(file.originFileObj);
@@ -117,9 +120,9 @@ const AllHangtags1 = () => {
   };
 
   const handleSafetyPinColorChange = ({ file }) => {
-    if (file.status === 'done') {
+    if (file.status === "done") {
       setNewStyleSafetyPinColor(file.response.url); // Set Safety Pin Color Image URL
-    } else if (file.status === 'uploading') {
+    } else if (file.status === "uploading") {
       const reader = new FileReader();
       reader.onload = (e) => setNewStyleSafetyPinColor(e.target.result);
       reader.readAsDataURL(file.originFileObj);
@@ -127,9 +130,9 @@ const AllHangtags1 = () => {
   };
 
   const handleProofOptionChange = ({ file }) => {
-    if (file.status === 'done') {
+    if (file.status === "done") {
       setNewStyleProofOption(file.response.url); // Set Proof Option Image URL
-    } else if (file.status === 'uploading') {
+    } else if (file.status === "uploading") {
       const reader = new FileReader();
       reader.onload = (e) => setNewStyleProofOption(e.target.result);
       reader.readAsDataURL(file.originFileObj);
@@ -137,9 +140,9 @@ const AllHangtags1 = () => {
   };
 
   const handleTurnaroundOptionChange = ({ file }) => {
-    if (file.status === 'done') {
+    if (file.status === "done") {
       setNewStyleTurnaroundOption(file.response.url); // Set Turnaround Option Image URL
-    } else if (file.status === 'uploading') {
+    } else if (file.status === "uploading") {
       const reader = new FileReader();
       reader.onload = (e) => setNewStyleTurnaroundOption(e.target.result);
       reader.readAsDataURL(file.originFileObj);
@@ -151,7 +154,7 @@ const AllHangtags1 = () => {
       title: "Upload Images",
       content: (
         <div>
-          <p style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>Add Images</p>
+          <p style={{ fontSize: "1.5rem", fontWeight: "bold" }}>Add Images</p>
           <Upload
             action="your_upload_endpoint"
             listType="picture-card"
@@ -177,23 +180,29 @@ const AllHangtags1 = () => {
       ),
     },
     {
-      title: "Product Description",  // The step to add description input
+      title: "Product Description", // The step to add description input
       content: (
         <div>
-          <p style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>Enter the Description</p>
-    
+          <p style={{ fontSize: "1.5rem", fontWeight: "bold" }}>
+            Enter the Description
+          </p>
+
           {/* Description Title Heading */}
-          <p style={{ fontWeight: 'bold', marginBottom: '5px' }}>Description Title</p>
+          <p style={{ fontWeight: "bold", marginBottom: "5px" }}>
+            Description Title
+          </p>
           {/* Description Title Input */}
           <Input
             value={newTitle} // Binding input to state for title
             onChange={(e) => setNewTitle(e.target.value)} // Updating title state
             placeholder="Enter description title"
-            style={{ marginBottom: '10px' }} // Adding some margin between inputs
+            style={{ marginBottom: "10px" }} // Adding some margin between inputs
           />
-    
+
           {/* Description Heading */}
-          <p style={{ fontWeight: 'bold', marginBottom: '5px' }}>Product Description</p>
+          <p style={{ fontWeight: "bold", marginBottom: "5px" }}>
+            Product Description
+          </p>
           {/* Description Text Area */}
           <Input.TextArea
             value={newDescription}
@@ -221,7 +230,7 @@ const AllHangtags1 = () => {
               <div style={{ marginTop: 8 }}>Upload Image</div>
             </div>
           </Upload>
-          
+
           {/* Preview of the uploaded image */}
           {newImage && (
             <div style={{ marginTop: "10px" }}>
@@ -232,9 +241,9 @@ const AllHangtags1 = () => {
               />
             </div>
           )}
-          
+
           {/* Title Input Field */}
-          <p style={{ fontWeight: 'bold'  }}>Size Title</p>
+          <p style={{ fontWeight: "bold" }}>Size Title</p>
           <Input
             placeholder="Enter size title"
             value={newTitle1}
@@ -261,7 +270,7 @@ const AllHangtags1 = () => {
             </div>
           </Upload>
           {newStylePaperQuestion && (
-            <div style={{ marginTop: '10px' }}>
+            <div style={{ marginTop: "10px" }}>
               <img
                 src={newStylePaperQuestion}
                 alt="Uploaded"
@@ -269,7 +278,7 @@ const AllHangtags1 = () => {
               />
             </div>
           )}
-          <p style={{ fontWeight: 'bold' }}>Enter Paper Question Title</p>
+          <p style={{ fontWeight: "bold" }}>Enter Paper Question Title</p>
           <Input
             placeholder="Enter paper question title"
             value={newTitlePaperQuestion}
@@ -296,7 +305,7 @@ const AllHangtags1 = () => {
             </div>
           </Upload>
           {newStylePrintOption && (
-            <div style={{ marginTop: '10px' }}>
+            <div style={{ marginTop: "10px" }}>
               <img
                 src={newStylePrintOption}
                 alt="Uploaded"
@@ -304,7 +313,7 @@ const AllHangtags1 = () => {
               />
             </div>
           )}
-          <p style={{ fontWeight: 'bold' }}>Enter Print Option Title</p>
+          <p style={{ fontWeight: "bold" }}>Enter Print Option Title</p>
           <Input
             placeholder="Enter print option title"
             value={newTitlePrintOption}
@@ -331,7 +340,7 @@ const AllHangtags1 = () => {
             </div>
           </Upload>
           {newStyleHolePunchSize && (
-            <div style={{ marginTop: '10px' }}>
+            <div style={{ marginTop: "10px" }}>
               <img
                 src={newStyleHolePunchSize}
                 alt="Uploaded"
@@ -339,7 +348,7 @@ const AllHangtags1 = () => {
               />
             </div>
           )}
-          <p style={{ fontWeight: 'bold' }}>Enter Hole Punch Size Title</p>
+          <p style={{ fontWeight: "bold" }}>Enter Hole Punch Size Title</p>
           <Input
             placeholder="Enter hole punch size title"
             value={newTitleHolePunchSize}
@@ -366,7 +375,7 @@ const AllHangtags1 = () => {
             </div>
           </Upload>
           {newStyleHolePunchPosition && (
-            <div style={{ marginTop: '10px' }}>
+            <div style={{ marginTop: "10px" }}>
               <img
                 src={newStyleHolePunchPosition}
                 alt="Uploaded"
@@ -374,7 +383,7 @@ const AllHangtags1 = () => {
               />
             </div>
           )}
-          <p style={{ fontWeight: 'bold' }}>Enter Hole Punch Position Title</p>
+          <p style={{ fontWeight: "bold" }}>Enter Hole Punch Position Title</p>
           <Input
             placeholder="Enter hole punch position title"
             value={newTitleHolePunchPosition}
@@ -401,7 +410,7 @@ const AllHangtags1 = () => {
             </div>
           </Upload>
           {newStyleStringColor && (
-            <div style={{ marginTop: '10px' }}>
+            <div style={{ marginTop: "10px" }}>
               <img
                 src={newStyleStringColor}
                 alt="Uploaded"
@@ -409,7 +418,7 @@ const AllHangtags1 = () => {
               />
             </div>
           )}
-          <p style={{ fontWeight: 'bold' }}>Enter String Color Title</p>
+          <p style={{ fontWeight: "bold" }}>Enter String Color Title</p>
           <Input
             placeholder="Enter string color title"
             value={newTitleStringColor}
@@ -436,7 +445,7 @@ const AllHangtags1 = () => {
             </div>
           </Upload>
           {newStyleSafetyPinColor && (
-            <div style={{ marginTop: '10px' }}>
+            <div style={{ marginTop: "10px" }}>
               <img
                 src={newStyleSafetyPinColor}
                 alt="Uploaded"
@@ -444,7 +453,7 @@ const AllHangtags1 = () => {
               />
             </div>
           )}
-          <p style={{ fontWeight: 'bold' }}>Enter Safety Pin Color Title</p>
+          <p style={{ fontWeight: "bold" }}>Enter Safety Pin Color Title</p>
           <Input
             placeholder="Enter safety pin color title"
             value={newTitleSafetyPinColor}
@@ -471,7 +480,7 @@ const AllHangtags1 = () => {
             </div>
           </Upload>
           {newStyleProofOption && (
-            <div style={{ marginTop: '10px' }}>
+            <div style={{ marginTop: "10px" }}>
               <img
                 src={newStyleProofOption}
                 alt="Uploaded"
@@ -479,7 +488,7 @@ const AllHangtags1 = () => {
               />
             </div>
           )}
-          <p style={{ fontWeight: 'bold' }}>Enter Proof Option Title</p>
+          <p style={{ fontWeight: "bold" }}>Enter Proof Option Title</p>
           <Input
             placeholder="Enter proof option title"
             value={newTitleProofOption}
@@ -506,7 +515,7 @@ const AllHangtags1 = () => {
             </div>
           </Upload>
           {newStyleTurnaroundOption && (
-            <div style={{ marginTop: '10px' }}>
+            <div style={{ marginTop: "10px" }}>
               <img
                 src={newStyleTurnaroundOption}
                 alt="Uploaded"
@@ -514,7 +523,7 @@ const AllHangtags1 = () => {
               />
             </div>
           )}
-          <p style={{ fontWeight: 'bold' }}>Enter Turnaround Option Title</p>
+          <p style={{ fontWeight: "bold" }}>Enter Turnaround Option Title</p>
           <Input
             placeholder="Enter turnaround option title"
             value={newTitleTurnaroundOption}
@@ -617,7 +626,12 @@ const AllHangtags1 = () => {
     if (newImage && newTitle) {
       const updatedItems = hangtagItems.map((item) =>
         item.id === currentHangtag.id
-          ? { ...item, imageUrl: newImage, title: newTitle, description: newDescription }
+          ? {
+              ...item,
+              imageUrl: newImage,
+              title: newTitle,
+              description: newDescription,
+            }
           : item
       );
       setHangtagItems(updatedItems);
@@ -644,49 +658,41 @@ const AllHangtags1 = () => {
       <h2>All Hangtags Products</h2>
       <div
         style={{
+          marginTop: "20px",
           display: "flex",
           flexWrap: "wrap",
-          justifyContent: "center",
           gap: "20px",
         }}
       >
-        {hangtagItems.length > 0 ? (
-          hangtagItems.map((item) => (
-            <div key={item.id} className="allclothing-item">
-              <div className="allclothing-buttons">
-                <Button
-                  type="primary"
-                  onClick={() => handleEditProduct(item)}
-                >
-                  Edit
-                </Button>
-                <Button
-                  style={{ backgroundColor: "red", color: "white" }}
-                  onClick={() => handleDelete(item.id)}
-                >
-                  Delete
-                </Button>
-              </div>
-              <Card
-                className="allclothing-card"
-                hoverable
-                cover={<img alt="Hangtag" src={item.imageUrl} />}
-              >
-                <h3 className="allclothing-title">{item.title}</h3>
-                {item.description && <p>{item.description}</p>}
-              </Card>
-            </div>
-          ))
-        ) : (
-          <p>No products found</p>
-        )}
+        {hangtagItems.map((item, index) => (
+          <Card
+            key={index}
+            title={item.title}
+            style={{ width: "300px", marginBottom: "20px" }}
+            actions={[
+              <EditOutlined onClick={() => handleEditProduct(item)} />,
+              <DeleteOutlined
+                style={{ color: "red" }}
+                onClick={() => handleDelete(item.id)}
+              />,
+            ]}
+          >
+            <img
+              src={item.imageUrl}
+              alt={item.title}
+              style={{ width: "100%", height: "150px", objectFit: "cover" }}
+            />
+            <p>{item.description}</p>
+          </Card>
+        ))}
+       
         <div style={{ display: "flex", alignItems: "center", margin: "20px" }}>
           <Button
             type="primary"
             icon={<PlusOutlined />}
             onClick={handleAddNewProduct}
           >
-            Add New Product
+            Add New Hangtags
           </Button>
         </div>
       </div>

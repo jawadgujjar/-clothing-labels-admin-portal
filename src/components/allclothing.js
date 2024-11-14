@@ -9,7 +9,7 @@ import {
   Steps,
   theme,
 } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import "./allclothing.css";
 
 // Main functional component
@@ -628,19 +628,37 @@ const AllCloth1 = () => {
       ),
     },
   ];
-
+const MAX_STORAGE_SIZE = 5 * 1024 * 1024;
   // Load clothing items from localStorage
   useEffect(() => {
     const savedItems = localStorage.getItem("clothingItems");
     if (savedItems) {
-      setClothingItems(JSON.parse(savedItems));
+      try {
+        const parsedItems = JSON.parse(savedItems);
+        setClothingItems(parsedItems);
+      } catch (error) {
+        console.error("Error parsing clothing items from localStorage:", error);
+      }
     }
   }, []);
 
   // Save clothing items to localStorage
   useEffect(() => {
     if (clothingItems.length > 0) {
-      localStorage.setItem("clothingItems", JSON.stringify(clothingItems));
+      try {
+        const dataToSave = JSON.stringify(clothingItems);
+
+        // Check if the data exceeds the localStorage quota
+        if (dataToSave.length > MAX_STORAGE_SIZE) {
+          console.warn("Data is too large to be stored in localStorage.");
+          return;
+        }
+
+        // Save to localStorage
+        localStorage.setItem("clothingItems", dataToSave);
+      } catch (error) {
+        console.error("Error saving clothing items to localStorage:", error);
+      }
     }
   }, [clothingItems]);
 
@@ -746,49 +764,45 @@ const AllCloth1 = () => {
       <h2>All Clothing Products</h2>
       <div
         style={{
+          marginTop: "20px",
           display: "flex",
           flexWrap: "wrap",
-          justifyContent: "center",
           gap: "20px",
         }}
       >
-        {clothingItems.length > 0 ? (
-          clothingItems.map((item) => (
-            <div key={item.id} className="allclothing-item">
-              <div className="allclothing-buttons">
-                <Button type="primary" onClick={() => handleEditProduct(item)}>
-                  Edit
-                </Button>
-                <Button
-                  style={{ backgroundColor: "red", color: "white" }}
-                  onClick={() => handleDelete(item.id)}
-                >
-                  Delete
-                </Button>
-              </div>
-              <Card
-                className="allclothing-card"
-                hoverable
-                cover={<img alt="Clothing" src={item.imageUrl} />}
-              >
-                <h3 className="allclothing-title">{item.title}</h3>
-                {item.description && <p>{item.description}</p>}
-              </Card>
-            </div>
-          ))
-        ) : (
-          <p>No products found</p>
-        )}
+        {clothingItems.map((item, index) => (
+          <Card
+            key={index}
+            title={item.title}
+            style={{ width: "300px", marginBottom: "20px" }}
+            actions={[
+              <EditOutlined onClick={() => handleEditProduct(item)} />,
+              <DeleteOutlined
+                style={{ color: "red" }}
+                onClick={() => handleDelete(item.id)}
+              />,
+            ]}
+          >
+            <img
+              src={item.imageUrl}
+              alt={item.title}
+              style={{ width: "100%", height: "150px", objectFit: "cover" }}
+            />
+            <p>{item.description}</p>
+          </Card>
+        ))}
+       
         <div style={{ display: "flex", alignItems: "center", margin: "20px" }}>
           <Button
             type="primary"
             icon={<PlusOutlined />}
             onClick={handleAddNewProduct}
           >
-            Add New Product
+            Add New Products
           </Button>
         </div>
       </div>
+
 
       {/* Product Add Modal */}
       <Modal

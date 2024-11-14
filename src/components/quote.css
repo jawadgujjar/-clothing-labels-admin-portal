@@ -1,0 +1,77 @@
+/* Styling for the Quote container */
+.quote-container {
+    padding: 20px;
+    background-color: #f9f9f9;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  /* Title Styling */
+  .quote-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  /* Table wrapper to make sure it stays responsive */
+  .quote-table-wrapper {
+    overflow-x: auto;
+  }
+  
+  /* Custom table styling */
+  .custom-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  /* Table Header Styling */
+  .custom-table thead th {
+    background-color: #f0f2f5;
+    font-weight: bold;
+    padding: 10px;
+    text-align: left;
+    border-bottom: 2px solid #ddd;
+  }
+  
+  /* Table Body Styling */
+  .custom-table tbody td {
+    padding: 12px 10px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  /* Styling for the product images */
+  .custom-table img {
+    border-radius: 4px;
+    width: 50px; /* Adjust the image size */
+    height: 50px;
+    object-fit: cover;
+  }
+  
+  /* Responsive Styling: Make sure table is scrollable on small screens */
+  @media (max-width: 768px) {
+    .quote-container {
+      padding: 10px;
+    }
+  
+    .quote-title {
+      font-size: 18px;
+    }
+  
+    .custom-table {
+      font-size: 12px; /* Smaller font size on mobile */
+    }
+  
+    .custom-table img {
+      width: 40px; /* Smaller images on mobile */
+      height: 40px;
+    }
+  
+    .custom-table thead th {
+      padding: 8px;
+    }
+  
+    .custom-table tbody td {
+      padding: 10px 8px;
+    }
+  }
+  
