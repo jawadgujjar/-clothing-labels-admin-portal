@@ -1,86 +1,81 @@
-import React from 'react';
-import { Table, Image } from 'antd';
-import './quote.css';
+import React, { useEffect, useState } from "react";
+import { Table, Image, message } from "antd";
+import "./quote.css";
+import { quote } from "../utils/axios";
 
 function Quote() {
-  // Data for the table
-  const data = [
-    {
-      key: '1',
-      product: 'T-shirt',
-      artworkImage: 'https://example.com/artwork1.jpg',
-      width: '20',
-      height: '30',
-      quantity: 100,
-      contact: '123-456-7890',
-      name: 'John Doe',
-      email: 'johndoe@example.com',
-      comments: 'Urgent order',
-    },
-    {
-      key: '2',
-      product: 'Mug',
-      artworkImage: 'https://example.com/artwork2.jpg',
-      width: '15',
-      height: '25',
-      quantity: 50,
-      contact: '987-654-3210',
-      name: 'Jane Smith',
-      email: 'janesmith@example.com',
-      comments: 'No rush',
-    },
-    // Add more data rows as needed
-  ];
+  const [quoteData, setQuoteData] = useState([]);
 
   // Columns configuration for the table
   const columns = [
     {
-      title: 'Product',
-      dataIndex: 'product',
-      key: 'product',
+      title: "Product",
+      dataIndex: "product",
+      key: "product",
     },
     {
-      title: 'Artwork Image',
-      dataIndex: 'artworkImage',
-      key: 'artworkImage',
-      render: (text) => <Image width={50} src={text}   />,
+      title: "Artwork Image",
+      dataIndex: "artwork",
+      key: "artwork",
+      render: (artwork) =>
+        artwork && artwork.length > 0 ? (
+          <Image width={50} src={artwork[0]} /> // Displaying the first artwork URL
+        ) : (
+          <span>No Image</span>
+        ),
     },
     {
-      title: 'Width',
-      dataIndex: 'width',
-      key: 'width',
+      title: "Width",
+      dataIndex: "width",
+      key: "width",
     },
     {
-      title: 'Height',
-      dataIndex: 'height',
-      key: 'height',
+      title: "Height",
+      dataIndex: "height",
+      key: "height",
     },
     {
-      title: 'Quantity',
-      dataIndex: 'quantity',
-      key: 'quantity',
+      title: "Quantity",
+      dataIndex: "quantity",
+      key: "quantity",
     },
     {
-      title: 'Contact',
-      dataIndex: 'contact',
-      key: 'contact',
+      title: "Contact",
+      dataIndex: "phonenumber",
+      key: "phonenumber",
     },
     {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
+      title: "Name",
+      dataIndex: "name",
+      key: "name",
     },
     {
-      title: 'Email',
-      dataIndex: 'email',
-      key: 'email',
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
     },
     {
-      title: 'Comments',
-      dataIndex: 'comments',
-      key: 'comments',
+      title: "Comments",
+      dataIndex: "comments",
+      key: "comments",
     },
   ];
+
+  useEffect(() => {
+    quote({ method: "get" })
+      .then((res) => {
+        if (res && res.data && res.data.length > 0) {
+          console.log("Data:", res.data);
+          setQuoteData(res.data); // Set the fetched data to the state
+        } else {
+          console.log("No data found or data is empty");
+        }
+      })
+      .catch((error) => {
+        console.error("API Error:", error);
+        message.error("Something went wrong, please try again!");
+      });
+  }, []);
 
   return (
     <div className="quote-container">
@@ -88,10 +83,11 @@ function Quote() {
       <div className="quote-table-wrapper">
         <Table
           columns={columns}
-          dataSource={data}
+          dataSource={quoteData} // Use the fetched data from the state
           pagination={false} // Optional: Add pagination if needed
           className="custom-table" // Add a custom class to apply styles
         />
+         
       </div>
     </div>
   );

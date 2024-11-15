@@ -17,6 +17,7 @@ import AllHangtags1 from "../allhangtags";
 import Fancyhangtags1 from "../fancyhangtags";
 import Requestquote1 from "../requestquote";
 import Quote from "../quote";
+import Order from "../orderdetail/order";
 
 // Example components for each route
 const Users = () => (
@@ -49,8 +50,13 @@ const GetAQuote = () => (
      <Quote/>
   </div>
 );
+const Orders = () => (
+  <div>
+     < Order/>
+  </div>
+);
 // const AllHangTags = () => <div>This is All Hang Tags Content</div>;
-const Orders = () => <div>This is Orders Content</div>;
+ 
 const BlogManagement = () => <div>This is Blog Management Content</div>;
 
 const { Header, Sider, Content } = Layout;

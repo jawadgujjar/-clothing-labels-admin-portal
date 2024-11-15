@@ -1,19 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { Button, Modal, Upload, Input, message, Card, Steps } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import React, { useState, useEffect } from "react";
+import { Button, Modal, Upload, Input, message, Card, Steps } from "antd";
+import { PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 
 const { Step } = Steps;
 
 function Fancyhangtags1() {
   const [isProductModalVisible, setIsProductModalVisible] = useState(false);
   const [newImage, setNewImage] = useState(null); // Image for Modal 1
-  const [newImage1, setNewImage1] = useState(null); 
-  const [newTitle, setNewTitle] = useState(''); // Title for Modal 1
-  const [newDescription, setNewDescription] = useState(''); // Description for Modal 1
+  const [newImage1, setNewImage1] = useState(null);
+  const [newTitle, setNewTitle] = useState(""); // Title for Modal 1
+  const [newDescription, setNewDescription] = useState(""); // Description for Modal 1
   const [stepperImage, setStepperImage] = useState(null); // Image for Modal 2 (Stepper)
   const [stepperImage1, setStepperImage1] = useState(null);
-  const [stepperTitle, setStepperTitle] = useState(''); // Title for Modal 2 (Stepper)
-  const [stepperDescription, setStepperDescription] = useState(''); // Description for Modal 2 (Stepper)
+  const [stepperTitle, setStepperTitle] = useState(""); // Title for Modal 2 (Stepper)
+  const [stepperTitle1, setStepperTitle1] = useState("");
+  const [stepperDescription, setStepperDescription] = useState(""); // Description for Modal 2 (Stepper)
   const [editProductIndex, setEditProductIndex] = useState(null);
   const [products, setProducts] = useState([]);
   const [currentStep, setCurrentStep] = useState(0); // Stepper state
@@ -21,7 +22,7 @@ function Fancyhangtags1() {
 
   // Load products from localStorage on initial load
   useEffect(() => {
-    const savedProducts = localStorage.getItem('products');
+    const savedProducts = localStorage.getItem("products");
     if (savedProducts) {
       setProducts(JSON.parse(savedProducts));
     }
@@ -30,7 +31,7 @@ function Fancyhangtags1() {
   // Save products to localStorage on every change
   useEffect(() => {
     if (products.length > 0) {
-      saveToLocalStorage('products', products);
+      saveToLocalStorage("products", products);
     }
   }, [products]);
 
@@ -40,8 +41,8 @@ function Fancyhangtags1() {
       const dataString = JSON.stringify(data);
       localStorage.setItem(key, dataString);
     } catch (error) {
-      console.error('Error saving to localStorage:', error);
-      message.error('Local storage is full. Please clear some data.');
+      console.error("Error saving to localStorage:", error);
+      message.error("Local storage is full. Please clear some data.");
     }
   };
 
@@ -49,11 +50,11 @@ function Fancyhangtags1() {
   const handleAddNewProduct = () => {
     setIsProductModalVisible(true);
     setNewImage(null); // Reset image
-    setNewTitle(''); // Reset title
-    setNewDescription(''); // Reset description
+    setNewTitle(""); // Reset title
+    setNewDescription(""); // Reset description
     setStepperImage(null); // Reset stepper image
-    setStepperTitle(''); // Reset stepper title
-    setStepperDescription(''); // Reset stepper description
+    setStepperTitle(""); // Reset stepper title
+    setStepperDescription(""); // Reset stepper description
     setEditProductIndex(null); // Reset edit index when adding new product
   };
 
@@ -65,7 +66,7 @@ function Fancyhangtags1() {
   // Handle opening the stepper modal after OK
   const handleProductOk = () => {
     if (!newImage || !newTitle || !newDescription) {
-      message.error('Please fill all fields.');
+      message.error("Please fill all fields.");
       return;
     }
     // After OK, open the stepper modal
@@ -104,11 +105,11 @@ function Fancyhangtags1() {
       const updatedProducts = [...products];
       updatedProducts[editProductIndex] = newProduct;
       setProducts(updatedProducts);
-      message.success('Product edited successfully!');
+      message.success("Product edited successfully!");
     } else {
       // Add new product
       setProducts([...products, newProduct]);
-      message.success('Product added successfully!');
+      message.success("Product added successfully!");
     }
 
     // Reset states after submission
@@ -116,11 +117,11 @@ function Fancyhangtags1() {
   };
 
   // Handle image upload change in stepper modal
-  const handleImageChange = ({ file }, modalType = 'stepper') => {
-    const target = modalType === 'stepper' ? setStepperImage : setNewImage;
-    if (file.status === 'done') {
+  const handleImageChange = ({ file }, modalType = "stepper") => {
+    const target = modalType === "stepper" ? setStepperImage : setNewImage;
+    if (file.status === "done") {
       target(file.response.url); // Assuming the file response contains a URL
-    } else if (file.status === 'uploading') {
+    } else if (file.status === "uploading") {
       const reader = new FileReader();
       reader.onload = (e) => {
         target(e.target.result); // Fallback to base64 image
@@ -128,17 +129,18 @@ function Fancyhangtags1() {
       reader.readAsDataURL(file.originFileObj);
     }
   };
-  const handleImageChange1 = ({ file }, modalType = 'stepper') => {
-    const target = modalType === 'stepper' ? setStepperImage1 : setNewImage1;
-    if (file.status === 'done') {
-      target(file.response.url); // Assuming the file response contains a URL
-    } else if (file.status === 'uploading') {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        target(e.target.result); // Fallback to base64 image
-      };
-      reader.readAsDataURL(file.originFileObj);
-    }
+  const handleImageChange1 = ({ fileList }, modalType = "stepper") => {
+    const target = modalType === "stepper" ? setStepperImage1 : setNewImage1;
+
+    // Store the image URLs or base64 strings in an array
+    const uploadedImages = fileList.map((file) =>
+      file.status === "done"
+        ? file.response.url
+        : file.url || URL.createObjectURL(file.originFileObj)
+    );
+
+    // Update the state with the uploaded images
+    target(uploadedImages);
   };
 
   // Handle the edit product functionality
@@ -155,12 +157,16 @@ function Fancyhangtags1() {
   const handleDeleteProduct = (index) => {
     const updatedProducts = products.filter((_, i) => i !== index);
     setProducts(updatedProducts);
-    message.success('Product deleted successfully!');
+    message.success("Product deleted successfully!");
   };
 
   return (
     <div>
-      <Button type="primary" icon={<PlusOutlined />} onClick={handleAddNewProduct}>
+      <Button
+        type="primary"
+        icon={<PlusOutlined />}
+        onClick={handleAddNewProduct}
+      >
         Add Product
       </Button>
 
@@ -171,33 +177,41 @@ function Fancyhangtags1() {
         onOk={handleProductOk}
         onCancel={handleProductCancel}
       >
+        {/* Upload Image */}
         <Upload
           action="your_upload_endpoint" // Replace with your actual upload endpoint
           listType="picture"
-          onChange={(file) => handleImageChange(file, 'product')}
+          onChange={(file) => handleImageChange(file, "product")}
           showUploadList={false}
         >
           <Button>Upload Image</Button>
         </Upload>
-        {newImage1 && <img src={newImage1} alt="Hangtag Image" style={{ width: '100%', marginTop: '10px' }} />}
+
+        {/* Display the uploaded image below the title input */}
+        {newImage && (
+          <img
+            src={newImage}
+            alt="Hangtag Image"
+            style={{ width: "100%", marginTop: "10px" }}
+          />
+        )}
+
+        {/* Title Input */}
         <Input
           placeholder="Enter hangtag title"
           value={newTitle}
           onChange={(e) => setNewTitle(e.target.value)}
-          style={{ marginTop: '10px' }}
-        />
-        <Input.TextArea
-          placeholder="Enter hangtag description"
-          value={newDescription}
-          onChange={(e) => setNewDescription(e.target.value)}
-          rows={4}
-          style={{ marginTop: '10px' }}
+          style={{ marginTop: "10px" }}
         />
       </Modal>
 
       {/* Stepper Modal for completing product details */}
       <Modal
-        title={editProductIndex !== null ? "Edit Hangtag - Step" : "Add New Hangtag - Step"}
+        title={
+          editProductIndex !== null
+            ? "Edit Hangtag - Step"
+            : "Add New Hangtag - Step"
+        }
         visible={isStepperModalVisible}
         onOk={handleStepperProductOk}
         onCancel={() => setIsStepperModalVisible(false)}
@@ -205,11 +219,21 @@ function Fancyhangtags1() {
           <Button key="back" onClick={prev} disabled={currentStep === 0}>
             Previous
           </Button>,
-          <Button key="next" type="primary" onClick={next} disabled={currentStep === 2}>
+          <Button
+            key="next"
+            type="primary"
+            onClick={next}
+            disabled={currentStep === 2}
+          >
             Next
           </Button>,
-          <Button key="submit" type="primary" onClick={handleStepperProductOk} disabled={currentStep !== 2}>
-            {editProductIndex !== null ? 'Save Changes' : 'Add Product'}
+          <Button
+            key="submit"
+            type="primary"
+            onClick={handleStepperProductOk}
+            disabled={currentStep !== 2}
+          >
+            {editProductIndex !== null ? "Save Changes" : "Add Product"}
           </Button>,
         ]}
       >
@@ -223,22 +247,46 @@ function Fancyhangtags1() {
           <div>
             <Upload
               action="your_upload_endpoint" // Replace with your actual upload endpoint
-              listType="picture"
-              onChange={(file) => handleImageChange1(file, 'stepper')}
-              showUploadList={false}
+              listType="picture-card" // Shows images as thumbnails
+              onChange={({ fileList }) =>
+                handleImageChange1({ fileList }, "stepper")
+              }
+              showUploadList={{
+                showPreviewIcon: true,
+                showRemoveIcon: true,
+              }}
+              multiple // Allow multiple images to be uploaded
             >
-              <Button>Upload Image</Button>
+              <Button>Upload Image(s)</Button>
             </Upload>
-            {stepperImage1 && <img src={stepperImage1} alt="New Hangtag" style={{ width: '100%', marginTop: '10px' }} />}
+
+            {/* Display uploaded images */}
+            {stepperImage1 && stepperImage1.length > 0 && (
+              <div style={{ marginTop: "10px" }}>
+                {stepperImage1.map((image, index) => (
+                  <img
+                    key={index}
+                    src={image}
+                    alt={`Uploaded image ${index}`}
+                    style={{
+                      width: "100px",
+                      height: "100px",
+                      objectFit: "cover",
+                      marginRight: "10px",
+                    }}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         )}
 
         {currentStep === 1 && (
           <Input
             placeholder="Enter hangtag title"
-            value={stepperTitle}
-            onChange={(e) => setStepperTitle(e.target.value)}
-            style={{ marginTop: '10px' }}
+            value={stepperTitle1}
+            onChange={(e) => setStepperTitle1(e.target.value)}
+            style={{ marginTop: "10px" }}
           />
         )}
 
@@ -248,27 +296,37 @@ function Fancyhangtags1() {
             value={stepperDescription}
             onChange={(e) => setStepperDescription(e.target.value)}
             rows={4}
-            style={{ marginTop: '10px' }}
+            style={{ marginTop: "10px" }}
           />
         )}
       </Modal>
 
       {/* Display the added products */}
-      <div style={{ marginTop: '20px', display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
+      <div
+        style={{
+          marginTop: "20px",
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "20px",
+        }}
+      >
         {products.map((product, index) => (
           <Card
             key={index}
             title={product.title}
-            style={{ width: '300px', marginBottom: '20px' }}
+            style={{ width: "300px", marginBottom: "20px" }}
             actions={[
               <EditOutlined onClick={() => handleEditProduct(index)} />,
-              <DeleteOutlined style={{ color: 'red' }} onClick={() => handleDeleteProduct(index)} />,
+              <DeleteOutlined
+                style={{ color: "red" }}
+                onClick={() => handleDeleteProduct(index)}
+              />,
             ]}
           >
             <img
               src={product.image}
               alt={product.title}
-              style={{ width: '100%', height: '150px', objectFit: 'cover' }}
+              style={{ width: "100%", height: "150px", objectFit: "cover" }}
             />
             <p>{product.description}</p>
           </Card>
