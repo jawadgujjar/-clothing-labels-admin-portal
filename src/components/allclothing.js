@@ -11,6 +11,7 @@ import {
 } from "antd";
 import { PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import "./allclothing.css";
+import StyleStepper from "./allclothingstyle";
 
 // Main functional component
 const AllCloth1 = () => {
@@ -19,7 +20,7 @@ const AllCloth1 = () => {
   const [isDescriptionModalVisible, setIsDescriptionModalVisible] = useState(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false); // New state for edit modal
   const [newImage, setNewImage] = useState(null);
-  const [newStyle, setNewStyle] = useState(null);
+
   const [newSize, setNewSize] = useState(null);
   const [newVersion, setNewVersion] = useState(null);
   const [newProof, setNewProof] = useState(null);
@@ -58,17 +59,7 @@ const AllCloth1 = () => {
       reader.readAsDataURL(file.originFileObj);
     }
   };
-  const handleStyleChange = ({ file }) => {
-    if (file.status === "done") {
-      setNewImage(file.response.url); // Assuming the file response contains a URL
-    } else if (file.status === "uploading") {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setNewStyle(e.target.result);
-      };
-      reader.readAsDataURL(file.originFileObj);
-    }
-  };
+
   const handlesizeChange = ({ file }) => {
     if (file.status === "done") {
       setNewImage(file.response.url); // Assuming the file response contains a URL
@@ -233,81 +224,52 @@ const AllCloth1 = () => {
       title: "Style",
       content: (
         <div>
-          <h4>Add Style</h4>
-          {/* Image Upload Section */}
-          <Upload
-            action="your_upload_endpoint" // Replace with your actual upload endpoint
-            listType="picture-card"
-            showUploadList={false}
-            onChange={handleStyleChange} // This is a function to handle image change
-          >
-            <div>
-              <PlusOutlined />
-              <div style={{ marginTop: 8 }}>Upload Image</div>
-            </div>
-          </Upload>
-          
-          {/* Preview of the uploaded image */}
-          {newImage && (
-            <div style={{ marginTop: "10px" }}>
-              <img
-                src={newStyle}
-                alt="Uploaded Style"
-                style={{ width: "100px", height: "100px", objectFit: "cover" }}
-              />
-            </div>
-          )}
-          
-          {/* Title Input Field */}
-          <Input
-            placeholder="Enter style title"
-            value={newTitle}
-            onChange={(e) => setNewTitle(e.target.value)} // This binds the title input to state
-            style={{ marginTop: "10px" }}
-          />
+        
+           <div><StyleStepper/></div>
         </div>
+       
       ),
     },
 
-     {
-      title: "Size",
-      content: (
-        <div>
-          <h4>Add Size</h4>
-          {/* Image Upload Section */}
-          <Upload
-            action="your_upload_endpoint" // Replace with your actual upload endpoint
-            listType="picture-card"
-            showUploadList={false}
-            onChange={handlesizeChange} // This is a function to handle image change
-          >
-            <div>
-              <PlusOutlined />
-              <div style={{ marginTop: 8 }}>Upload Image</div>
-            </div>
-          </Upload>
+    //  {
+    //   title: "Size",
+    //   content: (
+    //     <div>
+    //       <h4>Add Size</h4>
+    //       {/* Image Upload Section */}
+    //       <Upload
+    //         action="your_upload_endpoint" // Replace with your actual upload endpoint
+    //         listType="picture-card"
+    //         showUploadList={false}
+    //         onChange={handlesizeChange} // This is a function to handle image change
+    //       >
+    //         <div>
+    //           <PlusOutlined />
+    //           <div style={{ marginTop: 8 }}>Upload Image</div>
+    //         </div>
+    //       </Upload>
           
-          {/* Preview of the uploaded image */}
-          {newImage && (
-            <div style={{ marginTop: "10px" }}>
-              <img
-                src={newSize}
-                alt="Uploaded Style"
-                style={{ width: "100px", height: "100px", objectFit: "cover" }}
-              />
-            </div>
-          )}
+    //       {/* Preview of the uploaded image */}
+    //       {newImage && (
+    //         <div style={{ marginTop: "10px" }}>
+    //           <img
+    //             src={newSize}
+    //             alt="Uploaded Style"
+    //             style={{ width: "100px", height: "100px", objectFit: "cover" }}
+    //           />
+    //         </div>
+    //       )}
           
-          {/* Title Input Field */}
-          <Input
-            placeholder="Enter style title"
-            value={newTitle1}
-            onChange={(e) => setNewTitle1(e.target.value)} // This binds the title input to state
-            style={{ marginTop: "10px" }}
-          />
-        </div>
-      ),
-    },
+    //       {/* Title Input Field */}
+    //       <Input
+    //         placeholder="Enter style title"
+    //         value={newTitle1}
+    //         onChange={(e) => setNewTitle1(e.target.value)} // This binds the title input to state
+    //         style={{ marginTop: "10px" }}
+    //       />
+    //     </div>
+    //   ),
+    // },  
 
      {
       title: "Versions",

@@ -65,7 +65,7 @@ function Fancyhangtags1() {
 
   // Handle opening the stepper modal after OK
   const handleProductOk = () => {
-    if (!newImage || !newTitle || !newDescription) {
+    if (!newImage || !newTitle ) {
       message.error("Please fill all fields.");
       return;
     }
