@@ -12,7 +12,7 @@ import {
 import { Layout, Menu, theme } from "antd";
 import Users1 from "../users";
 import Dashboard from "./dashboard"; // Make sure this path is correct
-import AllCloth1 from "../allclothing";
+import AllCloth1 from "../allclothing"; 
 import AllHangtags1 from "../allhangtags";
 import Fancyhangtags1 from "../fancyhangtags";
 import Requestquote1 from "../requestquote";
