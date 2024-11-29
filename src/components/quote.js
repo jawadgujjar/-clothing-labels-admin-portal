@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Table, Image, message } from "antd";
 import "./quote.css";
-import { quote } from "../utils/axios";
+import { quote } from "../utils/axios"; // Assuming 'quote' is an axios instance or function
 
 function Quote() {
   const [quoteData, setQuoteData] = useState([]);
@@ -15,11 +15,11 @@ function Quote() {
     },
     {
       title: "Artwork Image",
-      dataIndex: "artwork",
-      key: "artwork",
-      render: (artwork) =>
-        artwork && artwork.length > 0 ? (
-          <Image width={50} src={artwork[0]} /> // Displaying the first artwork URL
+      dataIndex: "image",
+      key: "image",
+      render: (image) =>
+        image && image.length > 0 ? (
+          <Image width={50} src={image} alt="Artwork" /> // Pass the `image` URL from the row data
         ) : (
           <span>No Image</span>
         ),
@@ -62,19 +62,24 @@ function Quote() {
   ];
 
   useEffect(() => {
-    quote({ method: "get" })
-      .then((res) => {
-        if (res && res.data && res.data.length > 0) {
-          console.log("Data:", res.data);
-          setQuoteData(res.data); // Set the fetched data to the state
-        } else {
-          console.log("No data found or data is empty");
-        }
-      })
-      .catch((error) => {
-        console.error("API Error:", error);
-        message.error("Something went wrong, please try again!");
-      });
+    // Function to fetch data from API
+    const fetchQuotes = async () => {
+      try {
+        const response = await quote.get("/"); // Adjust the endpoint as per your API
+        console.log(response.data.quotes);
+        setQuoteData(
+          response.data.quotes.map((item, index) => ({
+            ...item,
+            key: index, // Adding a unique key for each row
+          }))
+        );
+      } catch (error) {
+        console.error("Error fetching quotes:", error);
+        message.error("Failed to fetch quotes. Please try again later.");
+      }
+    };
+
+    fetchQuotes();
   }, []);
 
   return (
@@ -87,7 +92,6 @@ function Quote() {
           pagination={false} // Optional: Add pagination if needed
           className="custom-table" // Add a custom class to apply styles
         />
-         
       </div>
     </div>
   );

@@ -18,8 +18,16 @@ import Fancyhangtags1 from "../fancyhangtags";
 import Requestquote1 from "../requestquote";
 import Quote from "../quote";
 import Order from "../orderdetail/order";
+import Login from "../login/login";
+import Register from "../login/register";
+import Blog1 from "../blogs/blog"; // Correct path to Blog1 component
 
 // Example components for each route
+const Log = () => (
+  <div>
+    <Login />
+  </div>
+);
 const Users = () => (
   <div>
     <Users1 />
@@ -37,27 +45,29 @@ const AllHangTags = () => (
 );
 const FancyHangTags = () => (
   <div>
-     <Fancyhangtags1/>
+    <Fancyhangtags1 />
   </div>
 );
 const Requestquote = () => (
   <div>
-     <Requestquote1/>
+    <Requestquote1 />
   </div>
 );
 const GetAQuote = () => (
   <div>
-     <Quote/>
+    <Quote />
   </div>
 );
 const Orders = () => (
   <div>
-     < Order/>
+    <Order />
   </div>
 );
-// const AllHangTags = () => <div>This is All Hang Tags Content</div>;
- 
-const BlogManagement = () => <div>This is Blog Management Content</div>;
+const BlogManagement = () => (
+  <div>
+    <Blog1 /> {/* Correctly closed Blog1 component */}
+  </div>
+);
 
 const { Header, Sider, Content } = Layout;
 
@@ -76,14 +86,17 @@ const Sider1 = () => {
       >
         <div className="demo-logo-vertical" />
         <h3 style={{ color: "#fff", padding: "16px", margin: 0 }}>
-          <Link to="/" style={{ color: "#fff", textDecoration: "none" }}>
+          <Link to="/dashboard" style={{ color: "#fff", textDecoration: "none" }}>
             Dashboard
           </Link>
         </h3>
         <hr style={{ border: "1px solid #fff", margin: "0 16px" }} />
         <Menu theme="dark" defaultSelectedKeys={["1"]} mode="inline">
+          <Menu.Item key="12" icon={<UserOutlined />}>
+            <Link to="/login">Login</Link>
+          </Menu.Item>
           <Menu.Item key="1" icon={<UserOutlined />}>
-            <Link to="/users">User</Link>
+            <Link to="/users">Users</Link>
           </Menu.Item>
           <Menu.Item key="9" icon={<ShoppingCartOutlined />}>
             <Link to="/orders">Orders</Link>
@@ -109,7 +122,7 @@ const Sider1 = () => {
               <Link to="/fancy-hangtags">Fancy Hang Tags</Link>
             </Menu.Item>
             <Menu.Item key="8" icon={<TagOutlined />}>
-              <Link to="/request-quote">Request a quote</Link>
+              <Link to="/request-quote">Request a Quote</Link>
             </Menu.Item>
           </Menu.SubMenu>
         </Menu>
@@ -128,13 +141,12 @@ const Sider1 = () => {
         </Header>
         <Content style={{ margin: "16px" }}>
           <Routes>
-            <Route path="/" element={<Dashboard />} />{" "}
-            {/* Route for Dashboard */}
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/users" element={<Users />} />
             <Route path="/all-clothing" element={<AllClothing />} />
             <Route path="/all-hangtags" element={<AllHangTags />} />
             <Route path="/fancy-hangtags" element={<FancyHangTags />} />
-            <Route path="/request-quote" element={< Requestquote />} />
+            <Route path="/request-quote" element={<Requestquote />} />
             <Route path="/orders" element={<Orders />} />
             <Route path="/get-a-quote" element={<GetAQuote />} />
             <Route path="/blog-management" element={<BlogManagement />} />

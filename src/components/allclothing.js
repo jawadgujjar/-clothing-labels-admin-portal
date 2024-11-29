@@ -8,6 +8,7 @@ import {
   message,
   Steps,
   theme,
+  Form 
 } from "antd";
 import { PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import "./allclothing.css";
@@ -20,8 +21,8 @@ const AllCloth1 = () => {
   const [isDescriptionModalVisible, setIsDescriptionModalVisible] = useState(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false); // New state for edit modal
   const [newImage, setNewImage] = useState(null);
-
-  const [newSize, setNewSize] = useState(null);
+  const [newImage1, setNewImage1] = useState(null);
+  // const [newSize, setNewSize] = useState(null);
   const [newVersion, setNewVersion] = useState(null);
   const [newProof, setNewProof] = useState(null);
   const [newTurn, setNewTurn] = useState(null);
@@ -32,7 +33,7 @@ const AllCloth1 = () => {
   const [newCotton, setNewCotton] = useState(null);
   const [newTitle, setNewTitle] = useState("");
   const [newTitle0, setNewTitle0] = useState("");
-  const [newTitle1, setNewTitle1] = useState("");
+  // const [newTitle1, setNewTitle1] = useState("");
   const [newTitle2, setNewTitle2] = useState("");
   const [newTitle3, setNewTitle3] = useState("");
   const [newTitle4, setNewTitle4] = useState("");
@@ -51,7 +52,7 @@ const AllCloth1 = () => {
   const handleImageChange = ({ file }) => {
     if (file.status === "done") {
       setNewImage(file.response.url); // Assuming the file response contains a URL
-    } else if (file.status === "uploading") {
+    } else if (file.status === "uploading") {   
       const reader = new FileReader();
       reader.onload = (e) => {
         setNewImage(e.target.result);
@@ -59,14 +60,13 @@ const AllCloth1 = () => {
       reader.readAsDataURL(file.originFileObj);
     }
   };
-
-  const handlesizeChange = ({ file }) => {
+  const handleImageChange1 = ({ file }) => {
     if (file.status === "done") {
       setNewImage(file.response.url); // Assuming the file response contains a URL
     } else if (file.status === "uploading") {
       const reader = new FileReader();
       reader.onload = (e) => {
-        setNewSize(e.target.result);
+        setNewImage1(e.target.result);
       };
       reader.readAsDataURL(file.originFileObj);
     }
@@ -167,56 +167,57 @@ const AllCloth1 = () => {
   const prev = () => {
     setCurrent(current - 1);
   };
-
+  const [form] = Form.useForm();
+  const handleFormSubmit = (values) => {
+    console.log('Form submitted with values:', values);
+    message.success('Form submitted successfully!');
+  };
   const steps = [
     {
       title: "Upload Images",
       content: (
         <div>
           <p style={{fontSize:'1.5rem',fontWeight:'bold'}}>Add Images</p>
-          <Upload
-            action="your_upload_endpoint"
-            listType="picture-card"
-            onChange={handleImageChange}
-            multiple={true} // Allow multiple file uploads
-            showUploadList={{ showPreviewIcon: true, showRemoveIcon: true }}
+           <Form form={form} onFinish={handleFormSubmit}>
+          <Form.Item
+            name="images"
+            valuePropName="fileList"
+            rules={[{ required: true, message: 'Please upload at least one image!' }]}
           >
-            <div>
-              <PlusOutlined />
-              <div style={{ marginTop: 8 }}>Upload Images</div>
-            </div>
-          </Upload>
-          {newImage && (
-            <div style={{ marginTop: "10px" }}>
-              <img
-                src={newImage}
-                alt="Uploaded"
-                style={{ width: "400px", marginRight: "10px" }}
-              />
-            </div>
-          )}
+            <Upload
+              action="your_upload_endpoint"
+              listType="picture-card"
+              multiple={true} // Allow multiple file uploads
+              showUploadList={{ showPreviewIcon: true, showRemoveIcon: true }}
+            >
+              <div>
+                <PlusOutlined />
+                <div style={{ marginTop: 8 }}>Upload Images</div>
+              </div>
+            </Upload>
+          </Form.Item>
+          </Form>
         </div>
       ),
     },
     {
-      title: "Production Description",  // The step to add description input
+      title: "Production Description",
       content: (
         <div>
-           <p style={{ fontWeight: 'bold', marginBottom: '5px' }}>Description Title</p>
-          {/* Description Title Input */}
-          <Input
-            value={newTitle0} // Binding input to state for title
-            onChange={(e) => setNewTitle0(e.target.value)} // Updating title state
-            placeholder="Enter description title"
-            style={{ marginBottom: '10px' }} // Adding some margin between inputs
-          />
+          <p style={{ fontWeight: 'bold', marginBottom: '5px' }}>Description Title</p>
+          <Form.Item
+            name="descriptionTitle"
+            rules={[{ required: true, message: 'Please enter a description title!' }]}
+          >
+            <Input placeholder="Enter description title" />
+          </Form.Item>
           <p style={{fontSize:'1.5rem',fontWeight:'bold'}}>Enter the Description</p>
-          <Input.TextArea
-            value={newDescription}
-            onChange={(e) => setNewDescription(e.target.value)} // Binding input to state
-            placeholder="Enter product description"
-            rows={4}
-          />
+          <Form.Item
+            name="description"
+            rules={[{ required: true, message: 'Please enter a description!' }]}
+          >
+            <Input.TextArea placeholder="Enter product description" rows={4} />
+          </Form.Item>
         </div>
       ),
     },
@@ -224,329 +225,223 @@ const AllCloth1 = () => {
       title: "Style",
       content: (
         <div>
-        
-           <div><StyleStepper/></div>
+          <Form.Item
+            name="style"
+            rules={[{ required: true, message: 'Please select a style!' }]}
+          >
+            <Button>Choose Style</Button> {/* Replace with style selection logic */}
+          </Form.Item>
         </div>
-       
       ),
     },
-
-    //  {
-    //   title: "Size",
-    //   content: (
-    //     <div>
-    //       <h4>Add Size</h4>
-    //       {/* Image Upload Section */}
-    //       <Upload
-    //         action="your_upload_endpoint" // Replace with your actual upload endpoint
-    //         listType="picture-card"
-    //         showUploadList={false}
-    //         onChange={handlesizeChange} // This is a function to handle image change
-    //       >
-    //         <div>
-    //           <PlusOutlined />
-    //           <div style={{ marginTop: 8 }}>Upload Image</div>
-    //         </div>
-    //       </Upload>
-          
-    //       {/* Preview of the uploaded image */}
-    //       {newImage && (
-    //         <div style={{ marginTop: "10px" }}>
-    //           <img
-    //             src={newSize}
-    //             alt="Uploaded Style"
-    //             style={{ width: "100px", height: "100px", objectFit: "cover" }}
-    //           />
-    //         </div>
-    //       )}
-          
-    //       {/* Title Input Field */}
-    //       <Input
-    //         placeholder="Enter style title"
-    //         value={newTitle1}
-    //         onChange={(e) => setNewTitle1(e.target.value)} // This binds the title input to state
-    //         style={{ marginTop: "10px" }}
-    //       />
-    //     </div>
-    //   ),
-    // },  
-
-     {
+    {
       title: "Versions",
       content: (
         <div>
           <h4>Add Versions</h4>
-          {/* Image Upload Section */}
-          <Upload
-            action="your_upload_endpoint" // Replace with your actual upload endpoint
-            listType="picture-card"
-            showUploadList={false}
-            onChange={handleversionChange} // This is a function to handle image change
+          <Form.Item
+            name="versions"
+            valuePropName="fileList"
+            rules={[{ required: true, message: 'Please upload version images!' }]}
           >
-            <div>
-              <PlusOutlined />
-              <div style={{ marginTop: 8 }}>Upload Image</div>
-            </div>
-          </Upload>
-          
-          {/* Preview of the uploaded image */}
-          {newImage && (
-            <div style={{ marginTop: "10px" }}>
-              <img
-                src={newVersion}
-                alt="Uploaded Style"
-                style={{ width: "100px", height: "100px", objectFit: "cover" }}
-              />
-            </div>
-          )}
-          
-          {/* Title Input Field */}
-          <Input
-            placeholder="Enter style title"
-            value={newTitle2}
-            onChange={(e) => setNewTitle2(e.target.value)} // This binds the title input to state
-            style={{ marginTop: "10px" }}
-          />
+            <Upload
+              action="your_upload_endpoint"
+              listType="picture-card"
+              showUploadList={false}
+              multiple={true}
+            >
+              <div>
+                <PlusOutlined />
+                <div style={{ marginTop: 8 }}>Upload Image</div>
+              </div>
+            </Upload>
+          </Form.Item>
+          <Form.Item
+            name="versionTitle"
+            rules={[{ required: true, message: 'Please enter version title!' }]}
+          >
+            <Input placeholder="Enter version title" />
+          </Form.Item>
         </div>
       ),
     },
-
     {
       title: "Proof Option",
       content: (
         <div>
           <h4>Add Proof Option</h4>
-          {/* Image Upload Section */}
-          <Upload
-            action="your_upload_endpoint" // Replace with your actual upload endpoint
-            listType="picture-card"
-            showUploadList={false}
-            onChange={handleproofChange} // This is a function to handle image change
+          <Form.Item
+            name="proofOption"
+            valuePropName="fileList"
+            rules={[{ required: true, message: 'Please upload proof option images!' }]}
           >
-            <div>
-              <PlusOutlined />
-              <div style={{ marginTop: 8 }}>Upload Image</div>
-            </div>
-          </Upload>
-          
-          {/* Preview of the uploaded image */}
-          {newImage && (
-            <div style={{ marginTop: "10px" }}>
-              <img
-                src={newProof}
-                alt="Uploaded Style"
-                style={{ width: "100px", height: "100px", objectFit: "cover" }}
-              />
-            </div>
-          )}
-          
-          {/* Title Input Field */}
-          <Input
-            placeholder="Enter style title"
-            value={newTitle3}
-            onChange={(e) => setNewTitle3(e.target.value)} // This binds the title input to state
-            style={{ marginTop: "10px" }}
-          />
+            <Upload
+              action="your_upload_endpoint"
+              listType="picture-card"
+              showUploadList={false}
+            >
+              <div>
+                <PlusOutlined />
+                <div style={{ marginTop: 8 }}>Upload Image</div>
+              </div>
+            </Upload>
+          </Form.Item>
+          <Form.Item
+            name="proofOptionTitle"
+            rules={[{ required: true, message: 'Please enter proof option title!' }]}
+          >
+            <Input placeholder="Enter proof option title" />
+          </Form.Item>
         </div>
       ),
     },
-
-  {
+    {
       title: "Turnaround option",
       content: (
         <div>
           <h4>Add Turnaround option</h4>
-          {/* Image Upload Section */}
-          <Upload
-            action="your_upload_endpoint" // Replace with your actual upload endpoint
-            listType="picture-card"
-            showUploadList={false}
-            onChange={handleturnChange} // This is a function to handle image change
+          <Form.Item
+            name="turnaroundOption"
+            valuePropName="fileList"
+            rules={[{ required: true, message: 'Please upload turnaround option images!' }]}
           >
-            <div>
-              <PlusOutlined />
-              <div style={{ marginTop: 8 }}>Upload Image</div>
-            </div>
-          </Upload>
-          
-          {/* Preview of the uploaded image */}
-          {newImage && (
-            <div style={{ marginTop: "10px" }}>
-              <img
-                src={newTurn}
-                alt="Uploaded Style"
-                style={{ width: "100px", height: "100px", objectFit: "cover" }}
-              />
-            </div>
-          )}
-          
-          {/* Title Input Field */}
-          <Input
-            placeholder="Enter style title"
-            value={newTitle4}
-            onChange={(e) => setNewTitle4(e.target.value)} // This binds the title input to state
-            style={{ marginTop: "10px" }}
-          />
+            <Upload
+              action="your_upload_endpoint"
+              listType="picture-card"
+              showUploadList={false}
+            >
+              <div>
+                <PlusOutlined />
+                <div style={{ marginTop: 8 }}>Upload Image</div>
+              </div>
+            </Upload>
+          </Form.Item>
+          <Form.Item
+            name="turnaroundOptionTitle"
+            rules={[{ required: true, message: 'Please enter turnaround option title!' }]}
+          >
+            <Input placeholder="Enter turnaround option title" />
+          </Form.Item>
         </div>
       ),
     },
-    
     {
       title: "Backing Options",
       content: (
         <div>
           <h4>Add Backing Options</h4>
-          {/* Image Upload Section */}
-          <Upload
-            action="your_upload_endpoint" // Replace with your actual upload endpoint
-            listType="picture-card"
-            showUploadList={false}
-            onChange={handlebackingChange} // This is a function to handle image change
+          <Form.Item
+            name="backingOptions"
+            valuePropName="fileList"
+            rules={[{ required: true, message: 'Please upload backing option images!' }]}
           >
-            <div>
-              <PlusOutlined />
-              <div style={{ marginTop: 8 }}>Upload Image</div>
-            </div>
-          </Upload>
-          
-          {/* Preview of the uploaded image */}
-          {newImage && (
-            <div style={{ marginTop: "10px" }}>
-              <img
-                src={newBacking}
-                alt="Uploaded Style"
-                style={{ width: "100px", height: "100px", objectFit: "cover" }}
-              />
-            </div>
-          )}
-          
-          {/* Title Input Field */}
-          <Input
-            placeholder="Enter style title"
-            value={newTitle5}
-            onChange={(e) => setNewTitle5(e.target.value)} // This binds the title input to state
-            style={{ marginTop: "10px" }}
-          />
+            <Upload
+              action="your_upload_endpoint"
+              listType="picture-card"
+              showUploadList={false}
+            >
+              <div>
+                <PlusOutlined />
+                <div style={{ marginTop: 8 }}>Upload Image</div>
+              </div>
+            </Upload>
+          </Form.Item>
+          <Form.Item
+            name="backingOptionsTitle"
+            rules={[{ required: true, message: 'Please enter backing options title!' }]}
+          >
+            <Input placeholder="Enter backing options title" />
+          </Form.Item>
         </div>
       ),
     },
-
-     {
+    {
       title: "Metallic Threads",
       content: (
         <div>
           <h4> Add Metallic Threads</h4>
-          {/* Image Upload Section */}
-          <Upload
-            action="your_upload_endpoint" // Replace with your actual upload endpoint
-            listType="picture-card"
-            showUploadList={false}
-            onChange={handlemetallicChange} // This is a function to handle image change
+          <Form.Item
+            name="metallicThreads"
+            valuePropName="fileList"
+            rules={[{ required: true, message: 'Please upload metallic thread images!' }]}
           >
-            <div>
-              <PlusOutlined />
-              <div style={{ marginTop: 8 }}>Upload Image</div>
-            </div>
-          </Upload>
-          
-          {/* Preview of the uploaded image */}
-          {newImage && (
-            <div style={{ marginTop: "10px" }}>
-              <img
-                src={newMetallic}
-                alt="Uploaded Style"
-                style={{ width: "100px", height: "100px", objectFit: "cover" }}
-              />
-            </div>
-          )}
-          
-          {/* Title Input Field */}
-          <Input
-            placeholder="Enter style title"
-            value={newTitle6}
-            onChange={(e) => setNewTitle6(e.target.value)} // This binds the title input to state
-            style={{ marginTop: "10px" }}
-          />
+            <Upload
+              action="your_upload_endpoint"
+              listType="picture-card"
+              showUploadList={false}
+            >
+              <div>
+                <PlusOutlined />
+                <div style={{ marginTop: 8 }}>Upload Image</div>
+              </div>
+            </Upload>
+          </Form.Item>
+          <Form.Item
+            name="metallicThreadsTitle"
+            rules={[{ required: true, message: 'Please enter metallic threads title!' }]}
+          >
+            <Input placeholder="Enter metallic threads title" />
+          </Form.Item>
         </div>
       ),
     },
-
     {
       title: "Satin Material Color",
       content: (
         <div>
           <h4>Add Satin Material Color</h4>
-          {/* Image Upload Section */}
-          <Upload
-            action="your_upload_endpoint" // Replace with your actual upload endpoint
-            listType="picture-card"
-            showUploadList={false}
-            onChange={handlesatinChange} // This is a function to handle image change
+          <Form.Item
+            name="satinMaterial"
+            valuePropName="fileList"
+            rules={[{ required: true, message: 'Please upload satin material color images!' }]}
           >
-            <div>
-              <PlusOutlined />
-              <div style={{ marginTop: 8 }}>Upload Image</div>
-            </div>
-          </Upload>
-          
-          {/* Preview of the uploaded image */}
-          {newImage && (
-            <div style={{ marginTop: "10px" }}>
-              <img
-                src={newSatin}
-                alt="Uploaded Style"
-                style={{ width: "100px", height: "100px", objectFit: "cover" }}
-              />
-            </div>
-          )}
-          
-          {/* Title Input Field */}
-          <Input
-            placeholder="Enter style title"
-            value={newTitle7}
-            onChange={(e) => setNewTitle7(e.target.value)} // This binds the title input to state
-            style={{ marginTop: "10px" }}
-          />
+            <Upload
+              action="your_upload_endpoint"
+              listType="picture-card"
+              showUploadList={false}
+            >
+              <div>
+                <PlusOutlined />
+                <div style={{ marginTop: 8 }}>Upload Image</div>
+              </div>
+            </Upload>
+          </Form.Item>
+          <Form.Item
+            name="satinMaterialTitle"
+            rules={[{ required: true, message: 'Please enter satin material title!' }]}
+          >
+            <Input placeholder="Enter satin material title" />
+          </Form.Item>
         </div>
       ),
     },
-
-     {
-      title: "Print colors",
+    {
+      title: "Print Colors",
       content: (
         <div>
           <h4>Add Print Colors</h4>
-          {/* Image Upload Section */}
-          <Upload
-            action="your_upload_endpoint" // Replace with your actual upload endpoint
-            listType="picture-card"
-            showUploadList={false}
-            onChange={handleprintChange} // This is a function to handle image change
+          <Form.Item
+            name="printColors"
+            valuePropName="fileList"
+            rules={[{ required: true, message: 'Please upload print color images!' }]}
           >
-            <div>
-              <PlusOutlined />
-              <div style={{ marginTop: 8 }}>Upload Image</div>
-            </div>
-          </Upload>
-          
-          {/* Preview of the uploaded image */}
-          {newImage && (
-            <div style={{ marginTop: "10px" }}>
-              <img
-                src={newPrint}
-                alt="Uploaded Style"
-                style={{ width: "100px", height: "100px", objectFit: "cover" }}
-              />
-            </div>
-          )}
-          
-          {/* Title Input Field */}
-          <Input
-            placeholder="Enter style title"
-            value={newTitle8}
-            onChange={(e) => setNewTitle8(e.target.value)} // This binds the title input to state
-            style={{ marginTop: "10px" }}
-          />
+            <Upload
+              action="your_upload_endpoint"
+              listType="picture-card"
+              showUploadList={false}
+            >
+              <div>
+                <PlusOutlined />
+                <div style={{ marginTop: 8 }}>Upload Image</div>
+              </div>
+            </Upload>
+          </Form.Item>
+          <Form.Item
+            name="printColorsTitle"
+            rules={[{ required: true, message: 'Please enter print colors title!' }]}
+          >
+            <Input placeholder="Enter print colors title" />
+          </Form.Item>
         </div>
       ),
     },
@@ -555,37 +450,28 @@ const AllCloth1 = () => {
       content: (
         <div>
           <h4>Cotton Material Colors</h4>
-          {/* Image Upload Section */}
-          <Upload
-            action="your_upload_endpoint" // Replace with your actual upload endpoint
-            listType="picture-card"
-            showUploadList={false}
-            onChange={handlecottonChange} // This is a function to handle image change
+          <Form.Item
+            name="cottonMaterial"
+            valuePropName="fileList"
+            rules={[{ required: true, message: 'Please upload cotton material colors images!' }]}
           >
-            <div>
-              <PlusOutlined />
-              <div style={{ marginTop: 8 }}>Upload Image</div>
-            </div>
-          </Upload>
-          
-          {/* Preview of the uploaded image */}
-          {newImage && (
-            <div style={{ marginTop: "10px" }}>
-              <img
-                src={newCotton}
-                alt="Uploaded Style"
-                style={{ width: "100px", height: "100px", objectFit: "cover" }}
-              />
-            </div>
-          )}
-          
-          {/* Title Input Field */}
-          <Input
-            placeholder="Enter style title"
-            value={newTitle9}
-            onChange={(e) => setNewTitle9(e.target.value)} // This binds the title input to state
-            style={{ marginTop: "10px" }}
-          />
+            <Upload
+              action="your_upload_endpoint"
+              listType="picture-card"
+              showUploadList={false}
+            >
+              <div>
+                <PlusOutlined />
+                <div style={{ marginTop: 8 }}>Upload Image</div>
+              </div>
+            </Upload>
+          </Form.Item>
+          <Form.Item
+            name="cottonMaterialTitle"
+            rules={[{ required: true, message: 'Please enter cotton material title!' }]}
+          >
+            <Input placeholder="Enter cotton material title" />
+          </Form.Item>
         </div>
       ),
     },
@@ -720,7 +606,7 @@ const MAX_STORAGE_SIZE = 5 * 1024 * 1024;
     setNewTitle("");
     setNewDescription("");
   };
-
+  
   return (
     <div>
       <h2>All Clothing Products</h2>
@@ -753,7 +639,7 @@ const MAX_STORAGE_SIZE = 5 * 1024 * 1024;
             <p>{item.description}</p>
           </Card>
         ))}
-       
+
         <div style={{ display: "flex", alignItems: "center", margin: "20px" }}>
           <Button
             type="primary"
@@ -764,7 +650,6 @@ const MAX_STORAGE_SIZE = 5 * 1024 * 1024;
           </Button>
         </div>
       </div>
-
 
       {/* Product Add Modal */}
       <Modal
@@ -792,6 +677,13 @@ const MAX_STORAGE_SIZE = 5 * 1024 * 1024;
           placeholder="Enter product title"
           value={newTitle}
           onChange={(e) => setNewTitle(e.target.value)}
+          style={{ marginTop: "10px" }}
+        />
+        <Input.TextArea
+          placeholder="Enter product description"
+          value={newDescription}
+          onChange={(e) => setNewDescription(e.target.value)}
+          rows={4}
           style={{ marginTop: "10px" }}
         />
       </Modal>
@@ -848,14 +740,14 @@ const MAX_STORAGE_SIZE = 5 * 1024 * 1024;
           alignItems: "center",
         }}
       >
-        <Steps current={current} items={steps} />
+        <Steps current={current} onChange={setCurrent} items={steps} />
         <div
           style={{
             lineHeight: "260px",
             textAlign: "center",
-            color: token.colorTextTertiary,
-            backgroundColor: token.colorFillAlter,
-            borderRadius: token.borderRadiusLG,
+            color: '#8c8c8c',
+            backgroundColor: '#f4f4f4',
+            borderRadius: '8px',
             marginTop: 16,
             width: "100%",
             maxWidth: "900px", // Ensures the content doesn't exceed 900px

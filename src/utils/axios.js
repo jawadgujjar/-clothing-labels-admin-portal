@@ -8,7 +8,12 @@ const products = axios.create({
 const quote = axios.create({
   baseURL: `${url}/getquote`, // Corrected template literal
 });
-
+const requestquote = axios.create({
+  baseURL: `${url}/requestquote`, // Corrected template literal
+});
+const blog = axios.create({
+  baseURL: `${url}/blogs`, // Corrected template literal
+});
 // Request interceptor for products
 products.interceptors.request.use(
   (req) => {
@@ -28,4 +33,22 @@ quote.interceptors.request.use(
     return Promise.reject(err);
   }
 );
-export { products,quote };
+requestquote.interceptors.request.use(
+  (req) => {
+    // Add any custom headers or logic here if needed
+    return req;
+  },
+  (err) => {
+    return Promise.reject(err);
+  }
+);
+blog.interceptors.request.use(
+  (req) => {
+    // Add any custom headers or logic here if needed
+    return req;
+  },
+  (err) => {
+    return Promise.reject(err);
+  }
+);
+export { products,quote,requestquote,blog };

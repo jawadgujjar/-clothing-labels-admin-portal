@@ -1,156 +1,152 @@
-import React from 'react';
-import { Table, Card, Row, Col, Typography } from 'antd';
-import './requestquote.css'; // Custom CSS file
+import React, { useEffect, useState } from "react";
+import { Table, Card, Row, Col, Typography } from "antd";
+import "./requestquote.css"; // Custom CSS file
+import { requestquote } from "../utils/axios"; // Assuming you have axios set up in utils
 
 const { Title } = Typography;
 
 const Requestquote1 = () => {
+  const [requestquoteData, setRequestQuoteData] = useState([]);
+  const [loading, setLoading] = useState(true); // State to handle loading status
+  const [error, setError] = useState(null); // State for error handling
+
   const columns = [
     {
-      title: 'Image',
-      dataIndex: 'image',
-      render: (text) => <img src={text} alt="Product" className="reqquote-image" />,
+      title: "Image",
+      dataIndex: "image",
+      render: (image) => (
+        <img src={image} alt="Product" className="reqquote-image" />
+      ),
     },
     {
-      title: 'Name',
-      dataIndex: 'name',
+      title: "Name",
+      dataIndex: "name",
     },
     {
-      title: 'Email',
-      dataIndex: 'email',
+      title: "Email",
+      dataIndex: "email",
     },
     {
-      title: 'Phone Number',
-      dataIndex: 'phone',
+      title: "Phone Number",
+      dataIndex: "phoneNumber",
     },
     {
-      title: 'Width',
-      dataIndex: 'width',
+      title: "Width",
+      dataIndex: "width",
     },
     {
-      title: 'Height',
-      dataIndex: 'height',
+      title: "Height",
+      dataIndex: "height",
     },
     {
-      title: 'Paper Weight',
-      dataIndex: 'paperWeight',
+      title: "Paper Weight",
+      dataIndex: "paperWeight",
     },
     {
-      title: 'Paper Finish',
-      dataIndex: 'paperFinish',
+      title: "Paper Finish",
+      dataIndex: "paperFinish",
     },
     {
-      title: 'Print Option',
-      dataIndex: 'printOption',
+      title: "Print Option",
+      dataIndex: "printOption",
     },
     {
-      title: 'Hole Punch Position',
-      dataIndex: 'holePunchPosition',
+      title: "Hole Punch Position",
+      dataIndex: "holePunchPosition",
     },
     {
-      title: 'Emboss or Deboss',
-      dataIndex: 'embossDeboss',
+      title: "Emboss or Deboss",
+      dataIndex: "embossOrDeboss",
     },
     {
-      title: 'Round Corner',
-      dataIndex: 'roundCorner',
+      title: "Round Corner",
+      dataIndex: "roundCorner",
     },
     {
-      title: 'UV Spot Gloss',
-      dataIndex: 'uvSpotGloss',
+      title: "UV Spot Gloss",
+      dataIndex: "uvSpotGloss",
     },
     {
-      title: 'Metallic Foil Color',
-      dataIndex: 'metallicFoilColor',
+      title: "Metallic Foil Color",
+      dataIndex: "metallicFoilColor",
     },
     {
-      title: 'String Color',
-      dataIndex: 'stringColor',
+      title: "String Color",
+      dataIndex: "stringColor",
     },
     {
-      title: 'Safety Color',
-      dataIndex: 'safetyColor',
+      title: "Safety Color",
+      dataIndex: "safetyColor",
     },
     {
-      title: 'Hole Grommet',
-      dataIndex: 'holeGrommet',
+      title: "Hole Grommet",
+      dataIndex: "holeGrommet",
     },
     {
-      title: 'Proof Options',
-      dataIndex: 'proofOptions',
+      title: "Proof Options",
+      dataIndex: "proofOptions",
     },
     {
-      title: 'Quantity',
-      dataIndex: 'quantity',
+      title: "Quantity",
+      dataIndex: "quantity",
     },
     {
-      title: 'Comments',
-      dataIndex: 'comments',
+      title: "Comments",
+      dataIndex: "comments",
     },
   ];
 
-  // Dummy data for the table
-  const data = [
-    {
-      key: '1',
-      image: 'https://via.placeholder.com/50',
-      name: 'John Doe',
-      email: 'johndoe@example.com',
-      phone: '123-456-7890',
-      width: '8.5"',
-      height: '11"',
-      paperWeight: '100gsm',
-      paperFinish: 'Glossy',
-      printOption: 'Full Color',
-      holePunchPosition: 'Top Center',
-      embossDeboss: 'Emboss',
-      roundCorner: 'Yes',
-      uvSpotGloss: 'Yes',
-      metallicFoilColor: 'Gold',
-      stringColor: 'Red',
-      safetyColor: 'Yellow',
-      holeGrommet: 'Yes',
-      proofOptions: 'Digital Proof',
-      quantity: 500,
-      comments: 'Please ensure high-quality print.',
-    },
-    {
-      key: '2',
-      image: 'https://via.placeholder.com/50',
-      name: 'Jane Smith',
-      email: 'janesmith@example.com',
-      phone: '987-654-3210',
-      width: '8.5"',
-      height: '14"',
-      paperWeight: '200gsm',
-      paperFinish: 'Matte',
-      printOption: 'Black & White',
-      holePunchPosition: 'Bottom Center',
-      embossDeboss: 'Deboss',
-      roundCorner: 'No',
-      uvSpotGloss: 'No',
-      metallicFoilColor: 'Silver',
-      stringColor: 'Black',
-      safetyColor: 'Blue',
-      holeGrommet: 'No',
-      proofOptions: 'Physical Proof',
-      quantity: 1000,
-      comments: 'Need to verify print colors.',
-    },
-  ];
+  useEffect(() => {
+    // Fetch quotes from the API
+    const fetchQuotes = async () => {
+      setLoading(true);
+      try {
+        const response = await requestquote.get("/"); // Check this endpoint
+        console.log("object")
+         if (response && response.data && response.data.data) {
+          setRequestQuoteData(
+            response.data.data.map((item, index) => ({
+              ...item,
+              key: index,
+            }))
+          );
+          console.log("dfw",requestquoteData)
+        } else {
+          throw new Error("No quotes available.");
+        }
+      } catch (error) {
+        console.error("Error fetching quotes:", error);
+        setError("Failed to fetch quotes. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchQuotes();
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>; // Display a loading indicator while data is fetching
+  }
+
+  if (error) {
+    return <div>{error}</div>; // Display error message if there's an error
+  }
 
   return (
     <div className="reqquote-container">
-      <Title level={2} className="reqquote-title">Request a Quote</Title>
+      <Title level={2} className="reqquote-title">
+        Request a Quote
+      </Title>
 
       <Row gutter={[16, 16]}>
         {/* Table for larger screens */}
         <Col span={24} className="reqquote-table-container">
           <Table
             columns={columns}
-            dataSource={data}
+            dataSource={requestquoteData} // Use the real fetched data
             bordered
-            scroll={{ x: 'max-content' }}
+            scroll={{ x: "max-content" }}
             pagination={{ pageSize: 5 }}
             className="reqquote-table"
           />
@@ -158,20 +154,40 @@ const Requestquote1 = () => {
 
         {/* Card layout for smaller screens */}
         <Col xs={24} sm={24} md={0}>
-          {data.map((item) => (
+          {requestquoteData.map((item) => (
             <Card
               key={item.key}
               title={item.name}
-              extra={<img src={item.image} alt="Product" className="reqquote-image-small" />}
+              extra={
+                <img
+                  src={item.image}
+                  alt="Product"
+                  className="reqquote-image-small"
+                />
+              }
               className="reqquote-card"
             >
-              <p><strong>Email:</strong> {item.email}</p>
-              <p><strong>Phone:</strong> {item.phone}</p>
-              <p><strong>Width x Height:</strong> {item.width} x {item.height}</p>
-              <p><strong>Paper Weight:</strong> {item.paperWeight}</p>
-              <p><strong>Print Option:</strong> {item.printOption}</p>
-              <p><strong>Quantity:</strong> {item.quantity}</p>
-              <p><strong>Comments:</strong> {item.comments}</p>
+              <p>
+                <strong>Email:</strong> {item.email}
+              </p>
+              <p>
+                <strong>Phone:</strong> {item.phoneNumber}
+              </p>
+              <p>
+                <strong>Width x Height:</strong> {item.width} x {item.height}
+              </p>
+              <p>
+                <strong>Paper Weight:</strong> {item.paperWeight}
+              </p>
+              <p>
+                <strong>Print Option:</strong> {item.printOption}
+              </p>
+              <p>
+                <strong>Quantity:</strong> {item.quantity}
+              </p>
+              <p>
+                <strong>Comments:</strong> {item.comments}
+              </p>
             </Card>
           ))}
         </Col>
