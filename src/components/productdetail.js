@@ -10,6 +10,7 @@ import {
   message,
 } from "antd";
 import Form from "react-bootstrap/Form";
+import { products } from "../utils/axios"; // Import the interceptor
 
 const { Step } = Steps;
 
@@ -20,7 +21,7 @@ const AddProduct = () => {
     descriptionTitle: "",
     description: "",
     image: null,
-    additionalImages: [],   
+    additionalImages: [],
   });
 
   const [styles, setStyles] = useState([]);
@@ -60,16 +61,69 @@ const AddProduct = () => {
     setOptions(updatedOptions);
   };
 
-  const handleSubmit = () => {
+  // const handleSubmit = () => {
+  //   const productData = {
+  //     productDetails,
+  //     styles,
+  //     options,
+  //   };
+  //   console.log("Product Data Submitted:", productData);
+  //   message.success("Product data saved successfully!");
+  //   setIsModalOpen(false);
+  //   // Here you can integrate the API call to save this data
+  // };
+
+  const handleSubmit = async () => {
     const productData = {
-      productDetails,
-      styles,
-      options,
+      title: productDetails.name,
+      image: productDetails.image, // Handle uploading the file to get a URL if needed
+      descriptions: [
+        {
+          descriptionTitle: productDetails.descriptionTitle,
+          text: productDetails.description,
+          images: productDetails.additionalImages, // Upload and use URLs for these
+          styles: styles.map((styles) => ({
+            name: styles.name,
+            image: styles.image,
+            sizes: styles.sizes.map((sizes) => ({
+              name: sizes.name,
+              image: sizes.image, // Upload and use URL
+              quantityPrice: sizes.prices.map((prices) => ({
+                quantity: prices.quantity,
+                price: prices.price, // Upload and use URL
+              })),
+            })),
+          })),
+          options: options.map((option) => ({
+            type: option.name,
+            cards: option.details.map((detail) => ({
+              title: detail.name,
+              image: detail.image, // Upload and use URL
+            })),
+          })),
+        },
+      ],
     };
-    console.log("Product Data Submitted:", productData);
-    message.success("Product data saved successfully!");
-    setIsModalOpen(false);
-    // Here you can integrate the API call to save this data
+
+    try {
+      const response = await products.post("/", productData); // Replace '/api/products' with your actual endpoint
+      console.log("API Response:", response.data);
+      message.success("Product saved successfully!");
+      setIsModalOpen(false);
+      // Optionally clear your form state
+      setProductDetails({
+        name: "",
+        image: null,
+        descriptionTitle: "",
+        description: "",
+        additionalImages: [],
+      });
+      setStyles([]);
+      setOptions([]);
+    } catch (error) {
+      console.error("Error saving product:", error);
+      message.error("Failed to save product. Please try again.");
+    }
   };
 
   return (
@@ -160,7 +214,12 @@ const AddProduct = () => {
           {/* Step 2: Styles */}
           {current === 1 && (
             <div>
-              <Button type="dashed" onClick={handleStyleAdd} block style={{ marginBottom: 16 }}>
+              <Button
+                type="dashed"
+                onClick={handleStyleAdd}
+                block
+                style={{ marginBottom: 16 }}
+              >
                 Add Style
               </Button>
 
@@ -307,7 +366,12 @@ const AddProduct = () => {
           {/* Step 3: Options */}
           {current === 2 && (
             <div>
-              <Button type="dashed" onClick={handleOptionAdd} block style={{ marginBottom: 16 }}>
+              <Button
+                type="dashed"
+                onClick={handleOptionAdd}
+                block
+                style={{ marginBottom: 16 }}
+              >
                 Add Option
               </Button>
 
