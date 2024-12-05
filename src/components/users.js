@@ -12,9 +12,13 @@ const Users1 = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await users.get("/"); // Adjust URL as per your backend API
-        setData(response.data.results); // Assuming your response contains a 'results' field with user data
-        console.log(response.data.results);
+        const token = localStorage.getItem("token"); // Get token from localStorage
+        const response = await users.get("/", {
+          headers: {
+            Authorization: `Bearer ${token}`, // Send token as Authorization header
+          },
+        });
+        setData(response.data.results);
       } catch (error) {
         console.error("Error fetching users:", error);
       }
@@ -153,5 +157,3 @@ const Users1 = () => {
 };
 
 export default Users1;
-
- 
