@@ -114,7 +114,7 @@ const AddProduct = () => {
       setProductDetails({
         name: "",
         image: null,
-        descriptionTitle: "",
+        descriptionTitle: "", 
         description: "",
         additionalImages: [],
       });
