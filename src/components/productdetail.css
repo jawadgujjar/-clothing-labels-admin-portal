@@ -1,0 +1,53 @@
+/* Custom Modal Styles */
+.custom-modal .ant-modal-content {
+    padding: 20px;
+  }
+  
+  .steps {
+    margin-bottom: 20px;
+  }
+  
+  .step-content {
+    padding: 10px;
+  }
+  
+  .input-field {
+    margin-bottom: 15px;
+    width: 100%;
+  }
+  
+  .file-upload {
+    margin-bottom: 15px;
+  }
+  
+  .add-button {
+    margin-bottom: 20px;
+  }
+  
+  .link-button {
+    margin-bottom: 10px;
+  }
+  
+  .add-price-button {
+    margin-top: 10px;
+  }
+  
+  .style-card, .option-card {
+    margin-bottom: 20px;
+  }
+  
+  .size-item {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .footer-buttons {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .prev-button, .next-button {
+    width: 48%;
+  }
+  

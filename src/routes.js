@@ -1,25 +1,75 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes } from 'react-router-dom';
-import { Layout } from 'antd';
-import Sider1 from './components/sider/sider';
+import React from "react";
+import {
+  Route,
+  BrowserRouter as Router,
+  Routes,
+  Navigate,
+} from "react-router-dom";
+import { Layout } from "antd";
+import RegisterForm from "./components/Auth/register";
+import LoginForm from "./components/Auth/login";
+import PrivateRoute from "./components/privateroutes";
+import AddProduct from "./components/productdetail";
+import AdminPortal from "./components/adminportal";
 
-const { Content } = Layout; // Import Content from Ant Design Layout
+const { Content } = Layout;
+
+// Helper function to check if token exists
+const isAuthenticated = () => {
+  return localStorage.getItem("token") !== null; // Replace 'token' with your token key
+};
 
 const AppRoutes = () => {
-    return (
-        <Router>
-            <Layout style={{ minHeight: '100vh' }}>
-            <Sider1 />
-                <Layout>
-                    <Content style={{ padding: '20px' }}>
-                        <Routes>
-                         
-                        </Routes>
-                    </Content>
-                </Layout>
-            </Layout>
-        </Router>
-    );
+  return (
+    <Router>
+      <Layout style={{ minHeight: "100vh" }}>
+        <Layout>
+          <Content style={{ padding: "20px" }}>
+            <Routes>
+              {/* Public routes */}
+              <Route path="/login" element={<LoginForm />} />
+              <Route path="/register" element={<RegisterForm />} />
+              <Route
+                path="*"
+                element={
+                  isAuthenticated() ? (
+                    <Navigate to="/dashboard" replace />
+                  ) : (
+                    <LoginForm />
+                  )
+                }
+              />
+              <Route
+                path="/"
+                element={
+                  isAuthenticated() ? (
+                    <Navigate to="/dashboard" replace />
+                  ) : (
+                    <LoginForm />
+                  )
+                }
+              />
+              <Route
+                path="/register"
+                element={
+                  isAuthenticated() ? (
+                    <Navigate to="/dashboard" replace />
+                  ) : (
+                    <RegisterForm />
+                  )
+                }
+              />
+              {/* Private routes */}
+              <Route element={<PrivateRoute />}>
+                <Route path="/dashboard" element={<AdminPortal />} />
+                <Route path="/addproduct" element={<AddProduct />} />
+              </Route>
+            </Routes>
+          </Content>
+        </Layout>
+      </Layout>
+    </Router>
+  );
 };
 
 export default AppRoutes;

@@ -6,6 +6,15 @@ import { quote } from "../utils/axios"; // Assuming 'quote' is an axios instance
 function Quote() {
   const [quoteData, setQuoteData] = useState([]);
 
+  const handleFilePreview = (file) => {
+    if (file && file.originFileObj instanceof File) {
+      return URL.createObjectURL(file.originFileObj); // Generate preview URL
+    } else {
+      console.warn("Invalid file object:", file);
+      return null; // Return null if file object is invalid
+    }
+  };
+
   // Columns configuration for the table
   const columns = [
     {
@@ -15,14 +24,26 @@ function Quote() {
     },
     {
       title: "Artwork Image",
-      dataIndex: "image",
-      key: "image",
-      render: (image) =>
-        image && image.length > 0 ? (
-          <Image width={50} src={image} alt="Artwork" /> // Pass the `image` URL from the row data
-        ) : (
-          <span>No Image</span>
-        ),
+      dataIndex: "artwork",
+      key: "artwork",
+      render: (artwork) =>
+        artwork.map((file) => {
+          const previewUrl = handleFilePreview(file);
+          return (
+            <div key={file.uid} style={{ marginBottom: "10px" }}>
+              <p>{file.name}</p>
+              {previewUrl ? (
+                <img
+                  src={previewUrl}
+                  alt={file.name}
+                  style={{ width: "100px", height: "auto" }}
+                />
+              ) : (
+                <p>Preview not available</p> // Fallback in case of error
+              )}
+            </div>
+          );
+        }),
     },
     {
       title: "Width",
@@ -66,7 +87,6 @@ function Quote() {
     const fetchQuotes = async () => {
       try {
         const response = await quote.get("/"); // Adjust the endpoint as per your API
-        console.log(response.data.quotes);
         setQuoteData(
           response.data.quotes.map((item, index) => ({
             ...item,
