@@ -19,7 +19,7 @@ import {
 } from "@ant-design/icons";
 import { blog } from "../../utils/axios";
 import "./blog.css";
-
+ 
 const { Step } = Steps;
 
 function Blog1() {
@@ -28,7 +28,7 @@ function Blog1() {
   const [image, setImage] = useState(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [headings, setHeadings] = useState([]);
+  const [headings, setHeadings] = useState([]); // Ensure it's always an array
   const [newHeading, setNewHeading] = useState("");
   const [newDescription, setNewDescription] = useState("");
   const [submittedData, setSubmittedData] = useState([]);
@@ -83,7 +83,7 @@ function Blog1() {
     setCurrentStep(0);
     setTitle("");
     setDescription("");
-    setHeadings([]);
+    setHeadings([]); // Reset headings when modal is closed
     setNewHeading("");
     setNewDescription("");
     setEditingIndex(null); // Reset the editing state when modal is closed
@@ -91,14 +91,14 @@ function Blog1() {
 
   const handleSubmit = async () => {
     const blogData = {
-        title: title, // Title from state
-        description: description, // Description from state
-        image: image, // Base64 string from the uploaded file
-        titledescriptions: headings.map((item) => ({
-          descriptionTitle: item.heading,
-          text: item.description,
-        })), // Map headings to match titledescriptions schema
-      };
+      title: title, // Title from state
+      description: description, // Description from state
+      image: image, // Base64 string from the uploaded file
+      titledescriptions: headings.map((item) => ({
+        descriptionTitle: item.heading,
+        text: item.description,
+      })), // Map headings to match titledescriptions schema
+    };
     console.log(blogData);
     try {
       if (editingIndex !== null) {
@@ -127,7 +127,7 @@ function Blog1() {
     const blogToEdit = submittedData[index];
     setTitle(blogToEdit.title);
     setDescription(blogToEdit.description);
-    setHeadings(blogToEdit.headings);
+    setHeadings(blogToEdit.headings || []); // Ensure headings is an array
     setImage(blogToEdit.image);
     setEditingIndex(index); // Set the editing index to know which blog is being edited
     setCurrentStep(0); // Reset step to 0 for the edit
@@ -165,7 +165,7 @@ function Blog1() {
       key: "headings",
       render: (headings) => (
         <div>
-          {headings.map((item, index) => (
+          {(headings || []).map((item, index) => (
             <div key={index}>
               <strong>{item.heading}</strong>: {item.description}
             </div>
@@ -293,7 +293,7 @@ function Blog1() {
 
               <div style={{ marginTop: "20px" }}>
                 <h3>Added Headings and Descriptions:</h3>
-                {headings.length > 0 ? (
+                {headings && headings.length > 0 ? (
                   headings.map((item, index) => (
                     <Space key={index} direction="vertical">
                       <div>
@@ -307,40 +307,37 @@ function Blog1() {
               </div>
             </>
           )}
+        </Form>
 
-          <div style={{ marginTop: "20px" }}>
-            <Button
-              style={{ marginRight: 8 }}
-              onClick={prev}
-              disabled={currentStep === 0}
-            >
+        <div className="modal-actions">
+          {currentStep > 0 && (
+            <Button onClick={prev} style={{ marginRight: 8 }}>
               Previous
             </Button>
-            {currentStep < 1 && (
-              <Button type="primary" onClick={next}>
-                Next
-              </Button>
-            )}
-            {currentStep === 1 && (
-              <Button type="submit" onClick={handleSubmit}>
-                Submit
-              </Button>
-            )}
-          </div>
-        </Form>
+          )}
+          {currentStep < 1 && (
+            <Button type="primary" onClick={next}>
+              Next
+            </Button>
+          )}
+          {currentStep === 1 && (
+            <Button type="primary" onClick={handleSubmit}>
+              Submit
+            </Button>
+          )}
+        </div>
       </Modal>
 
-      {/* Table to display the submitted blog data */}
-      <div style={{ marginTop: "40px" }}>
-        <h2>Submitted Blogs</h2>
-        <Table
-          columns={columns}
-          dataSource={submittedData}
-          rowKey={(record, index) => index}
-        />
-      </div>
+      <Table
+        columns={columns}
+        dataSource={submittedData}
+        rowKey={(record, index) => index}
+        pagination={false}
+      />
     </div>
   );
 }
 
 export default Blog1;
+
+

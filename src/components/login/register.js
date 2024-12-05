@@ -1,6 +1,7 @@
 import React from 'react';
 import { Form, Input, Button, Typography } from 'antd';
 import './register.css'; // Import your custom styles
+import { hasFormSubmit } from '@testing-library/user-event/dist/utils';
 
 const { Title } = Typography;
 
@@ -8,7 +9,7 @@ function Register() {
   return (
     <div className="register-container">
       <div className="register-form-container">
-        <Title level={2} className="register-heading">
+        <Title level={2} className="register-heading">   
           Please Register Your Account
         </Title>
 
@@ -79,5 +80,3 @@ function Register() {
 }
 
 export default Register;
-
-
