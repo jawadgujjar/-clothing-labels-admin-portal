@@ -44,7 +44,6 @@ const AdminPortal = () => {
   const handleLogout = () => {
     // Remove token from localStorage
     localStorage.removeItem("token");
-
     // Redirect to login or homepage using useNavigate
     navigate("/login");
   };
