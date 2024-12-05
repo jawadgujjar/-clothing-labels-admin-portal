@@ -1,0 +1,125 @@
+/* General Styles */
+body {
+  margin: 0;
+  font-family: "Arial", sans-serif;
+}
+
+.admin-portal {
+  display: flex;
+  height: 100vh;
+  overflow: hidden; /* Prevents extra scrollbars */
+}
+.logout-btn {
+  background-color: transparent; /* Red background for logout */
+  color: white; /* White text color */
+  font-size: 16px; /* Font size */
+  padding: 10px 20px; /* Padding for the button */
+  border: none; /* No border */
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer; /* Cursor changes to pointer on hover */
+  width: 100%; /* Button width */
+  text-align: center; /* Center align text */
+  transition: background-color 0.3s ease; /* Smooth background color transition */
+}
+
+.logout-btn:hover {
+  background-color: #d32f2f; /* Darker red when hovering */
+}
+
+/* Sidebar */
+.sidebar {
+  position: fixed; /* Sidebar stays fixed on the left */
+  top: 0; /* Stick to the top of the page */
+  left: 0; /* Stick to the left of the page */
+  width: 250px; /* Sidebar width */
+  height: 100vh; /* Full viewport height */
+  background-color: #1e1e2f;
+  color: #fff;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto; /* Enable vertical scrolling for the sidebar */
+  scrollbar-width: thin; /* Customize scrollbar width for Firefox */
+  scrollbar-color: #888 #1e1e2f; /* Customize scrollbar color for Firefox */
+  z-index: 10; /* Keep sidebar above other content */
+}
+
+/* Styling for Webkit browsers (e.g., Chrome, Edge, Safari) */
+.sidebar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 4px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background-color: #1e1e2f;
+}
+
+.sidebar-header {
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.sidebar-links {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.sidebar-links a {
+  cursor: pointer; /* Ensure sidebar links are clickable */
+  text-decoration: none;
+  color: #bdbdbd;
+  padding: 10px;
+  border-radius: 5px;
+  transition: 0.3s;
+}
+
+.sidebar-links a:hover {
+  background-color: #33334d;
+  color: #fff;
+}
+
+.dropdown {
+  position: relative;
+}
+
+/* Dropdown Menu */
+.dropdown-menu {
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  margin-left: 20px;
+}
+
+.dropdown:hover .dropdown-menu {
+  display: flex;
+}
+
+/* Main Content */
+.main-content {
+  flex-grow: 1;
+  padding: 40px;
+  margin-left: 250px; /* Push content to the right of the sidebar */
+  background-color: #f9f9f9;
+  overflow-y: auto; /* Ensure the main content scrolls if it overflows */
+}
+
+.main-content h1 {
+  color: #333;
+  font-size: 36px;
+}
+
+.main-content p {
+  color: #666;
+  font-size: 18px;
+}

@@ -1,34 +1,27 @@
-import React, { useState } from 'react';
-import { Modal } from 'antd'; // Import Modal from Ant Design
-import './users.css';
+import React, { useState, useEffect } from "react";
+import { Modal, Button } from "antd"; // Import Modal and Button from Ant Design
+import "./users.css";
+import { users } from "../utils/axios";
 
 const Users1 = () => {
-  const [data, setData] = useState([
-    {
-      key: '1',
-      name: 'John Doe',
-      phone: '123-456-7890',
-      email: 'john.doe@example.com',
-      password: 'password123',
-    },
-    {
-      key: '2',
-      name: 'Jane Smith',
-      phone: '234-567-8901',
-      email: 'jane.smith@example.com',
-      password: 'password456',
-    },
-    {
-      key: '3',
-      name: 'Sam Brown',
-      phone: '345-678-9012',
-      email: 'sam.brown@example.com',
-      password: 'password789',
-    },
-  ]);
-
+  const [data, setData] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+
+  // Fetch users from API when the component mounts
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await users.get("/"); // Adjust URL as per your backend API
+        setData(response.data.results); // Assuming your response contains a 'results' field with user data
+        console.log(response.data.results);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+
+    fetchUsers();
+  }, []);
 
   const showModal = (user) => {
     setCurrentUser(user);
@@ -36,8 +29,9 @@ const Users1 = () => {
   };
 
   const handleOk = () => {
-    setData(prevData =>
-      prevData.map(user =>
+    // Update user in the data state after modifying currentUser
+    setData((prevData) =>
+      prevData.map((user) =>
         user.key === currentUser.key ? currentUser : user
       )
     );
@@ -58,13 +52,14 @@ const Users1 = () => {
 
   const confirmDelete = (key) => {
     Modal.confirm({
-      title: 'Are you sure to delete this user?',
+      title: "Are you sure to delete this user?",
       onOk: () => deleteUser(key),
     });
   };
 
   const deleteUser = (key) => {
-    setData(prevData => prevData.filter(user => user.key !== key));
+    // You might want to call an API here to delete the user from the backend
+    setData((prevData) => prevData.filter((user) => user.key !== key));
   };
 
   return (
@@ -76,20 +71,25 @@ const Users1 = () => {
             <th>Name</th>
             <th>Phone Number</th>
             <th>Email</th>
-            <th>Password</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {data.map(user => (
+          {data.map((user) => (
             <tr key={user.key}>
               <td>{user.name}</td>
-              <td>{user.phone}</td>
+              <td>{user.phonenumber}</td>
               <td>{user.email}</td>
-              <td>{user.password}</td>
               <td>
-                <button className="edit-button" onClick={() => showModal(user)}>Edit</button>
-                <button className="delete-button" onClick={() => confirmDelete(user.key)}>Delete</button>
+                <Button className="edit-button" onClick={() => showModal(user)}>
+                  Edit
+                </Button>
+                <Button
+                  className="delete-button"
+                  onClick={() => confirmDelete(user.key)}
+                >
+                  Delete
+                </Button>
               </td>
             </tr>
           ))}
