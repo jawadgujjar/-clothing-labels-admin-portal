@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Button,
   Modal,
@@ -19,7 +19,7 @@ import {
 } from "@ant-design/icons";
 import { blog } from "../../utils/axios";
 import "./blog.css";
- 
+
 const { Step } = Steps;
 
 function Blog1() {
@@ -28,28 +28,40 @@ function Blog1() {
   const [image, setImage] = useState(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [headings, setHeadings] = useState([]); // Ensure it's always an array
+  const [headings, setHeadings] = useState([]);
   const [newHeading, setNewHeading] = useState("");
   const [newDescription, setNewDescription] = useState("");
   const [submittedData, setSubmittedData] = useState([]);
-  const [editingIndex, setEditingIndex] = useState(null); // Track the index of the blog being edited
+  const [editingIndex, setEditingIndex] = useState(null);
   const [fileList, setFileList] = useState();
 
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        const response = await blog.get("/"); // Replace with your actual GET API endpoint
+        setSubmittedData(response.data); // Assuming response.data contains the list of blogs
+      } catch (error) {
+        message.error("Failed to fetch blog posts.");
+        console.error("Error fetching blogs:", error);
+      }
+    };
+    fetchBlogs();
+  }, []);
   const handleFileChange = ({ fileList: newFileList }) => {
     setFileList(newFileList);
 
     if (newFileList.length > 0) {
-      const file = newFileList[0].originFileObj; // Get the uploaded file object
+      const file = newFileList[0].originFileObj;
       const reader = new FileReader();
 
       reader.onload = (e) => {
         const base64String = e.target.result;
-        setImage(base64String); // Store the Base64 string in the state
+        setImage(base64String);
       };
 
-      reader.readAsDataURL(file); // Convert file to Base64
+      reader.readAsDataURL(file);
     } else {
-      setImage(null); // Clear image if no file is uploaded
+      setImage(null);
     }
   };
 
@@ -91,27 +103,23 @@ function Blog1() {
 
   const handleSubmit = async () => {
     const blogData = {
-      title: title, // Title from state
-      description: description, // Description from state
-      image: image, // Base64 string from the uploaded file
+      title: title,
+      description: description,
+      image: image,
       titledescriptions: headings.map((item) => ({
         descriptionTitle: item.heading,
         text: item.description,
-      })), // Map headings to match titledescriptions schema
+      })),
     };
-    console.log(blogData);
+
     try {
       if (editingIndex !== null) {
-        // Edit existing blog post logic (same as before)
         const updatedData = [...submittedData];
         updatedData[editingIndex] = blogData;
         setSubmittedData(updatedData);
         message.success("Blog post updated!");
       } else {
-        // Use getquote to make a POST request for submitting the blog
-        const response = await blog.post("/", blogData); // Replace '/blogs' with your actual API endpoint
-
-        // Add the new blog data to the list
+        const response = await blog.post("/", blogData);
         setSubmittedData([response.data, ...submittedData]);
         message.success("Blog post submitted!");
       }
@@ -127,18 +135,30 @@ function Blog1() {
     const blogToEdit = submittedData[index];
     setTitle(blogToEdit.title);
     setDescription(blogToEdit.description);
-    setHeadings(blogToEdit.headings || []); // Ensure headings is an array
+    setHeadings(blogToEdit.headings || []);
     setImage(blogToEdit.image);
-    setEditingIndex(index); // Set the editing index to know which blog is being edited
-    setCurrentStep(0); // Reset step to 0 for the edit
-    setIsModalVisible(true); // Open the modal for editing
+    setEditingIndex(index);
+    setCurrentStep(0);
+    setIsModalVisible(true);
   };
 
-  const handleDelete = (index) => {
-    const updatedData = [...submittedData];
-    updatedData.splice(index, 1); // Remove the blog at the specified index
-    setSubmittedData(updatedData);
-    message.success("Blog post deleted!");
+  const handleDelete = async (id) => {
+    try {
+      // Make the API call to delete the blog post using axios
+      const response = await blog.delete(`/${id}`); // Adjust the URL based on your backend
+
+      // Checking for 204 status code for successful deletion
+      if (response.status === 204) {
+        // Filter out the deleted blog post from the state
+        const updatedData = submittedData.filter((blog) => blog.id !== id); // Adjust based on your data structure
+        setSubmittedData(updatedData); // Update the state with the remaining blogs
+        message.success("Blog post deleted!"); // Show success message
+      } else {
+        throw new Error("Failed to delete blog post");
+      }
+    } catch (error) {
+      message.error("Error deleting blog post!"); // Show error message if the API call fails
+    }
   };
 
   // Columns for the Table
@@ -180,14 +200,14 @@ function Blog1() {
         <Space>
           <Button
             icon={<EditOutlined />}
-            onClick={() => handleEdit(index)}
+            onClick={() => handleEdit(record.id)}
             size="small"
           >
             Edit
           </Button>
           <Popconfirm
             title="Are you sure you want to delete this blog?"
-            onConfirm={() => handleDelete(index)}
+            onConfirm={() => handleDelete(record.id)}
             okText="Yes"
             cancelText="No"
           >
@@ -339,5 +359,3 @@ function Blog1() {
 }
 
 export default Blog1;
-
-

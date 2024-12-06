@@ -11,22 +11,31 @@ import {
 } from "antd";
 import Form from "react-bootstrap/Form";
 import { products } from "../utils/axios"; // Import the interceptor
+import { Storage } from "../firebase";
+import {
+  uploadBytes,
+  ref,
+  getDownloadURL,
+  uploadBytesResumable,
+} from "firebase/storage";
 
 const { Step } = Steps;
 
 const AddProduct = () => {
   const [current, setCurrent] = useState(0);
+  const [url, setUrl] = useState("");
+  const [percent, setPercent] = useState("");
   const [productDetails, setProductDetails] = useState({
     name: "",
     descriptionTitle: "",
     description: "",
-    image: null,
+    image: url,
     additionalImages: [],
   });
 
   const [styles, setStyles] = useState([]);
   const [options, setOptions] = useState([]);
-
+  const [uploadedImageUrl, setUploadedImageUrl] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleNext = () => {
@@ -72,7 +81,42 @@ const AddProduct = () => {
   //   setIsModalOpen(false);
   //   // Here you can integrate the API call to save this data
   // };
+  const date = new Date();
+  const showTime =
+    date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+  const handlesubmit = (e) => {
+    const uploadedFile = e.target.files[0]; // Get the uploaded file
+    if (uploadedFile) {
+      const imageDocument = ref(
+        Storage,
+        `images/${uploadedFile.name + showTime}`
+      );
+      const uploadTask = uploadBytesResumable(imageDocument, uploadedFile);
 
+      uploadTask.on("state_changed", (snapshot) => {
+        const percent = Math.round(
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+        );
+        setPercent(percent);
+      });
+
+      uploadBytes(imageDocument, uploadedFile)
+        .then(() => {
+          getDownloadURL(imageDocument)
+            .then((Url) => {
+              setUrl(Url);
+              setUploadedImageUrl(Url); // Set the uploaded image URL
+              console.log(Url);
+            })
+            .catch((error) => {
+              console.log(error.message, "error getting the image url");
+            });
+        })
+        .catch((error) => {
+          console.log(error.message);
+        });
+    }
+  };
   const handleSubmit = async () => {
     const productData = {
       title: productDetails.name,
@@ -113,8 +157,8 @@ const AddProduct = () => {
       // Optionally clear your form state
       setProductDetails({
         name: "",
-        image: null,
-        descriptionTitle: "", 
+        image: url,
+        descriptionTitle: "",
         description: "",
         additionalImages: [],
       });
@@ -162,7 +206,7 @@ const AddProduct = () => {
               />
               <Form.Group controlId="formFile" className="mb-3">
                 <Form.Label>Product Image</Form.Label>
-                <Form.Control
+                {/* <Form.Control
                   type="file"
                   onChange={(e) =>
                     setProductDetails((prev) => ({
@@ -170,7 +214,8 @@ const AddProduct = () => {
                       image: e.target.files[0],
                     }))
                   }
-                />
+                /> */}
+                <input type="file" onChange={handlesubmit} />
               </Form.Group>
               <Input
                 placeholder="Description Title"

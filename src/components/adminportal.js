@@ -8,12 +8,30 @@ import AllCloth1 from "./allclothing";
 import AllHangtags1 from "./allhangtags";
 import Requestquote1 from "./requestquote";
 import Dashboard from "./sider/dashboard";
-import { LogoutOutlined } from "@ant-design/icons";
+import { Dropdown, Menu, Button } from "antd";
+import { LogoutOutlined, DownOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 const AdminPortal = () => {
   const [activeContent, setActiveContent] = useState("Welcome");
   const navigate = useNavigate(); // Initialize useNavigate
+  const username = localStorage.getItem("username");
+
+  const menu = (
+    <Menu>
+      <Menu.Item key="1">
+        <a onClick={() => setActiveContent("All Clothing")}>All Clothing</a>
+      </Menu.Item>
+      <Menu.Item key="2">
+        <a onClick={() => setActiveContent("All Hang Tags")}>All Hang Tags</a>
+      </Menu.Item>
+      <Menu.Item key="3">
+        <a onClick={() => setActiveContent("Request a Quote")}>
+          Request a Quote
+        </a>
+      </Menu.Item>
+    </Menu>
+  );
 
   const renderContent = () => {
     switch (activeContent) {
@@ -34,7 +52,7 @@ const AdminPortal = () => {
       default:
         return (
           <div>
-            <p>Please Select Any Option from Side bar</p>
+            <p>Please Select Any Option from the Sidebar</p>
             <Dashboard />
           </div>
         );
@@ -54,7 +72,7 @@ const AdminPortal = () => {
       {/* Sidebar */}
       <aside className="sidebar">
         <div className="sidebar-header">
-          <h4>Hi, Ahsan</h4>
+          <h4>Hi, {username}</h4>
         </div>
         <nav className="sidebar-links">
           <a onClick={() => setActiveContent("Dashboard")}>Dashboard</a>
@@ -64,20 +82,11 @@ const AdminPortal = () => {
           <a onClick={() => setActiveContent("Blog Management")}>
             Blog Management
           </a>
-          <a className="dropdown">
-            Products
-            <div className="dropdown-menu">
-              <a onClick={() => setActiveContent("All Clothing")}>
-                All Clothing
-              </a>
-              <a onClick={() => setActiveContent("All Hang Tags")}>
-                All Hang Tags
-              </a>
-              <a onClick={() => setActiveContent("Request a Quote")}>
-                Request a Quote
-              </a>
-            </div>
-          </a>
+          <Dropdown overlay={menu} trigger={["click"]} className="products-dropdown">
+            <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
+              Products <DownOutlined />
+            </a>
+          </Dropdown>
           <button className="logout-btn" onClick={handleLogout}>
             <LogoutOutlined /> Logout
           </button>
