@@ -13,13 +13,13 @@ const Users1 = () => {
     const fetchUsers = async () => {
       try {
         const token = localStorage.getItem("token"); // Get token from localStorage
-        console.log(token, "jddjs");
         const response = await users.get("/", {
           headers: {
             Authorization: `Bearer ${token}`, // Send token as Authorization header
           },
         });
         setData(response.data.results);
+        console.log("id", response.data.results);
       } catch (error) {
         console.error("Error fetching users:", error);
       }
@@ -54,17 +54,38 @@ const Users1 = () => {
       [name]: value,
     }));
   };
+  const confirmDelete = (id, role) => {
+    // Check if the role is 'admin'
+    if (role === "admin") {
+      // Show a message if the role is admin
+      Modal.info({
+        title: "Cannot Delete",
+        content: "This is an admin user. Deletion is not allowed.",
+      });
+      return; // Prevent further execution
+    }
 
-  const confirmDelete = (key) => {
     Modal.confirm({
       title: "Are you sure to delete this user?",
-      onOk: () => deleteUser(key),
+      onOk: () => deleteUser(id),
     });
   };
 
-  const deleteUser = (key) => {
-    // You might want to call an API here to delete the user from the backend
-    setData((prevData) => prevData.filter((user) => user.key !== key));
+  const deleteUser = async (id) => {
+    try {
+      const token = localStorage.getItem("token"); // Get token from localStorage
+      await users.delete(`/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Send token as Authorization header
+        },
+      });
+
+      // Remove user from the frontend after successful deletion
+      setData((prevData) => prevData.filter((user) => user.id !== id)); // Use user.id
+      console.log(`User with id ${id} deleted successfully.`);
+    } catch (error) {
+      console.error("Error deleting user:", error);
+    }
   };
 
   return (
@@ -81,7 +102,7 @@ const Users1 = () => {
         </thead>
         <tbody>
           {data.map((user) => (
-            <tr key={user.key}>
+            <tr key={user.id}>
               <td>{user.name}</td>
               <td>{user.phonenumber}</td>
               <td>{user.email}</td>
@@ -91,7 +112,7 @@ const Users1 = () => {
                 </Button>
                 <Button
                   className="delete-button"
-                  onClick={() => confirmDelete(user.key)}
+                  onClick={() => confirmDelete(user.id, user.role)} // Pass user.role here
                 >
                   Delete
                 </Button>

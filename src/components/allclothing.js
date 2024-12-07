@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { products } from "../utils/axios"; // Adjust path accordingly
 import { Table, Button, message } from "antd";
+import "./allclothing.css";
 import { Link } from "react-router-dom";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons"; // Import icons
 
@@ -22,11 +23,20 @@ const AllCloth1 = () => {
 
   // Handle delete action
   const handleDelete = (productId) => {
+    const token = localStorage.getItem("token");
+    console.log("Token:", token);
+
     products
-      .delete(`/${productId}`) // Assuming the API has a delete endpoint like '/products/:id'
+      .delete(`/${productId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }) // Assuming the API has a delete endpoint like '/products/:id'
       .then(() => {
         message.success("Product deleted successfully!");
-        setProduct((prevProducts) => prevProducts.filter((item) => item._id !== productId)); // Remove product from state
+        setProduct((prevProducts) =>
+          prevProducts.filter((item) => item._id !== productId)
+        ); // Remove product from state
       })
       .catch((error) => {
         message.error("Failed to delete the product");
@@ -46,13 +56,16 @@ const AllCloth1 = () => {
       title: "Description",
       dataIndex: "descriptions",
       key: "description",
-      render: (descriptions) => descriptions[0]?.descriptionTitle || "No Description", // Display description title
+      render: (descriptions) =>
+        descriptions[0]?.descriptionTitle || "No Description", // Display description title
     },
     {
       title: "Image",
       dataIndex: "image",
       key: "image",
-      render: (image) => <img src={image} alt="product" style={{ width: "50px" }} />, // Display image thumbnail
+      render: (image) => (
+        <img src={image} alt="product" style={{ width: "50px" }} />
+      ), // Display image thumbnail
     },
     {
       title: "Actions",

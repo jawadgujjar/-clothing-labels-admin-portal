@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Image, message } from "antd";
+import { Table, Image, message, Button } from "antd";
 import "./quote.css";
 import { quote } from "../utils/axios"; // Assuming 'quote' is an axios instance or function
 
@@ -12,6 +12,18 @@ function Quote() {
     } else {
       console.warn("Invalid file object:", file);
       return null; // Return null if file object is invalid
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      const response = await quote.delete(`/${id}`);
+      // If the response is successful, remove the deleted quote from state
+      setQuoteData(quoteData.filter((quote) => quote.id !== id));
+      message.success("Quote deleted successfully");
+    } catch (error) {
+      console.error("Error deleting quote:", error);
+      message.error("Failed to delete quote. Please try again later.");
     }
   };
 
@@ -79,6 +91,18 @@ function Quote() {
       title: "Comments",
       dataIndex: "comments",
       key: "comments",
+    },
+    {
+      title: "Actions",
+      key: "actions",
+      render: (text, record) => (
+        <Button
+          danger
+          onClick={() => handleDelete(record.id)} // Assuming `id` is the identifier for the quote
+        >
+          Delete
+        </Button>
+      ),
     },
   ];
 

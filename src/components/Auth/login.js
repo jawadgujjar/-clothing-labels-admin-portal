@@ -22,6 +22,7 @@ const LoginForm = () => {
       try {
         // Call the API to verify credentials
         const response = await login.post("/", values);
+        localStorage.setItem("username", response.data.user.name);
 
         // Check if the role is admin
         if (response.data.user.role === "admin") {
