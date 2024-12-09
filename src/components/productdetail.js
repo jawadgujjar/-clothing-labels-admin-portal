@@ -11,20 +11,24 @@ import {
 } from "antd";
 import Form from "react-bootstrap/Form";
 import { products } from "../utils/axios"; // Import the interceptor
-import { Storage } from "../firebase";
+import { Storage } from "../firebaseConfig";
+import { useNavigate } from "react-router-dom";
+import { v4 as uuidv4 } from "uuid"; // To generate unique IDs for each style
 import {
   uploadBytes,
   ref,
   getDownloadURL,
   uploadBytesResumable,
 } from "firebase/storage";
-
 const { Step } = Steps;
 
 const AddProduct = () => {
   const [current, setCurrent] = useState(0);
-  const [url, setUrl] = useState("");
   const [percent, setPercent] = useState("");
+  const [percentages, setPercentages] = useState([]); // Track upload progress for multiple files
+  const [url, setUrl] = useState("");
+  const [uploadedImageUrl, setUploadedImageUrl] = useState("");
+  const [uploadedImageUrls, setUploadedImageUrls] = useState([]); // Store all uploaded image URLs
   const [productDetails, setProductDetails] = useState({
     name: "",
     descriptionTitle: "",
@@ -32,11 +36,11 @@ const AddProduct = () => {
     image: url,
     additionalImages: [],
   });
-
   const [styles, setStyles] = useState([]);
   const [options, setOptions] = useState([]);
-  const [uploadedImageUrl, setUploadedImageUrl] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(true);
+  const date = new Date();
+  const navigate = useNavigate();
 
   const handleNext = () => {
     setCurrent((prev) => prev + 1);
@@ -47,14 +51,17 @@ const AddProduct = () => {
   };
 
   const handleStyleAdd = () => {
-    setStyles((prev) => [...prev, { name: "", image: null, sizes: [] }]);
+    setStyles((prev) => [
+      ...prev,
+      { id: uuidv4(), name: "", image: "", sizes: [] },
+    ]);
   };
 
   const handleSizeAdd = (styleIndex) => {
     const updatedStyles = [...styles];
     updatedStyles[styleIndex].sizes.push({
       name: "",
-      image: null,
+      image: "",
       prices: [{ quantity: 0, price: 0 }], // Default quantity-price pair
     });
     setStyles(updatedStyles);
@@ -69,22 +76,9 @@ const AddProduct = () => {
     updatedOptions[optionIndex].details.push({ name: "", image: null });
     setOptions(updatedOptions);
   };
-
-  // const handleSubmit = () => {
-  //   const productData = {
-  //     productDetails,
-  //     styles,
-  //     options,
-  //   };
-  //   console.log("Product Data Submitted:", productData);
-  //   message.success("Product data saved successfully!");
-  //   setIsModalOpen(false);
-  //   // Here you can integrate the API call to save this data
-  // };
-  const date = new Date();
   const showTime =
     date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-  const handlesubmit = (e) => {
+  const handlesubmitimage = (e) => {
     const uploadedFile = e.target.files[0]; // Get the uploaded file
     if (uploadedFile) {
       const imageDocument = ref(
@@ -117,21 +111,165 @@ const AddProduct = () => {
         });
     }
   };
+  const handleSubmitmultipleimages = (e) => {
+    const files = e.target.files; // Get all selected files
+    const urls = []; // Temporary array to store URLs
+    const uploadProgress = []; // Temporary array to track progress
+
+    if (files.length > 0) {
+      Array.from(files).forEach((file, index) => {
+        const date = new Date();
+        const showTime =
+          date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+        const imageDocument = ref(Storage, `images/${file.name + showTime}`);
+        const uploadTask = uploadBytesResumable(imageDocument, file);
+        uploadTask.on(
+          "state_changed",
+          (snapshot) => {
+            const percent = Math.round(
+              (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+            );
+            uploadProgress[index] = percent; // Update the specific file's progress
+            setPercentages([...uploadProgress]); // Update state with all progress
+          },
+          (error) => {
+            console.log(error.message); // Handle error
+          },
+          async () => {
+            try {
+              const url = await getDownloadURL(imageDocument);
+              urls.push(url); // Push the URL to the temporary array
+              setUploadedImageUrls((prevUrls) => [...prevUrls, url]);
+            } catch (error) {
+              console.log(error.message, "error getting the image URL");
+            }
+          }
+        );
+      });
+    }
+  };
+
+  const handleSubmitStyleImage = (e, styleIndex) => {
+    const uploadedFile = e.target.files[0]; // Get the uploaded file
+    if (uploadedFile) {
+      const showTime = new Date().toISOString(); // Make sure time is unique per upload
+      const imageDocument = ref(
+        Storage,
+        `styles/${uuidv4()}-${showTime}-${uploadedFile.name}`
+      );
+      const uploadTask = uploadBytesResumable(imageDocument, uploadedFile);
+
+      uploadTask.on("state_changed", (snapshot) => {
+        const percent = Math.round(
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+        );
+        setPercent(percent); // Update the upload progress
+      });
+
+      uploadTask
+        .then(() => {
+          // Get the download URL once upload is complete
+          return getDownloadURL(imageDocument);
+        })
+        .then((url) => {
+          // Store the uploaded image URL for the specific style
+          const updatedStyles = [...styles];
+          updatedStyles[styleIndex] = {
+            ...updatedStyles[styleIndex],
+            imageUrl: url, // Add image URL to the corresponding style
+          };
+          setStyles(updatedStyles); // Update the styles state
+          console.log(updatedStyles, "dwbhj"); // Log the updated styles array immediately
+        })
+        .catch((error) => {
+          console.log(error.message, "error getting the image url");
+        });
+    }
+  };
+  const handleSubmitSizeImage = (e, styleIndex, sizeIndex) => {
+    const uploadedFile = e.target.files[0]; // Get the uploaded file
+    if (uploadedFile) {
+      const showTime = new Date().toISOString(); // Unique timestamp
+      const imageDocument = ref(
+        Storage,
+        `sizes/${uuidv4()}-${showTime}-${uploadedFile.name}`
+      );
+
+      const uploadTask = uploadBytesResumable(imageDocument, uploadedFile);
+
+      uploadTask.on("state_changed", (snapshot) => {
+        const percent = Math.round(
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+        );
+        setPercent(percent); // Update the upload progress (optional)
+      });
+
+      uploadTask
+        .then(() => {
+          return getDownloadURL(imageDocument); // Fetch download URL
+        })
+        .then((url) => {
+          // Update the size image in the specific style and size
+          const updatedStyles = [...styles];
+          updatedStyles[styleIndex].sizes[sizeIndex].imageUrl = url; // Set the image URL
+          setStyles(updatedStyles); // Update the styles state
+          console.log(updatedStyles, "Updated styles with size image");
+        })
+        .catch((error) => {
+          console.log(error.message, "error uploading size image");
+        });
+    }
+  };
+  const handleOptionDetailImageUpload = (e, optionIndex, detailIndex) => {
+    const uploadedFile = e.target.files[0]; // Get the uploaded file
+    if (uploadedFile) {
+      const showTime = new Date().toISOString(); // Ensure a unique timestamp
+      const imageDocument = ref(
+        Storage,
+        `options/${uuidv4()}-${showTime}-${uploadedFile.name}`
+      );
+
+      const uploadTask = uploadBytesResumable(imageDocument, uploadedFile);
+
+      uploadTask.on("state_changed", (snapshot) => {
+        const percent = Math.round(
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+        );
+        console.log(`Upload is ${percent}% done`); // Optional progress log
+      });
+
+      uploadTask
+        .then(() => {
+          // Get the download URL once upload is complete
+          return getDownloadURL(imageDocument);
+        })
+        .then((url) => {
+          // Update the corresponding option detail with the uploaded image URL
+          const updatedOptions = [...options];
+          updatedOptions[optionIndex].details[detailIndex].image = url; // Set image URL
+          setOptions(updatedOptions); // Update the state
+          console.log(updatedOptions, "Options updated with image URL");
+        })
+        .catch((error) => {
+          console.log(error.message, "Error uploading the image");
+        });
+    }
+  };
   const handleSubmit = async () => {
     const productData = {
       title: productDetails.name,
-      image: productDetails.image, // Handle uploading the file to get a URL if needed
+      image: url, // Handle uploading the file to get a URL if needed
       descriptions: [
         {
           descriptionTitle: productDetails.descriptionTitle,
           text: productDetails.description,
-          images: productDetails.additionalImages, // Upload and use URLs for these
+          images: uploadedImageUrls, // Upload and use URLs for these
           styles: styles.map((styles) => ({
             name: styles.name,
-            image: styles.image,
+            image: styles.imageUrl,
             sizes: styles.sizes.map((sizes) => ({
               name: sizes.name,
-              image: sizes.image, // Upload and use URL
+              image: sizes.imageUrl, // Upload and use URL
               quantityPrice: sizes.prices.map((prices) => ({
                 quantity: prices.quantity,
                 price: prices.price, // Upload and use URL
@@ -154,16 +292,16 @@ const AddProduct = () => {
       console.log("API Response:", response.data);
       message.success("Product saved successfully!");
       setIsModalOpen(false);
-      // Optionally clear your form state
       setProductDetails({
         name: "",
-        image: url,
+        image: "",
         descriptionTitle: "",
         description: "",
         additionalImages: [],
       });
       setStyles([]);
       setOptions([]);
+      navigate("/all-cloth"); // Replace "/all-cloth" with the route for AllCloth1
     } catch (error) {
       console.error("Error saving product:", error);
       message.error("Failed to save product. Please try again.");
@@ -179,7 +317,7 @@ const AddProduct = () => {
       <Modal
         title="Add Product"
         visible={isModalOpen}
-        onCancel={() => setIsModalOpen(false)}
+        maskClosable={false}
         footer={null}
         width={800}
       >
@@ -206,16 +344,12 @@ const AddProduct = () => {
               />
               <Form.Group controlId="formFile" className="mb-3">
                 <Form.Label>Product Image</Form.Label>
-                {/* <Form.Control
-                  type="file"
-                  onChange={(e) =>
-                    setProductDetails((prev) => ({
-                      ...prev,
-                      image: e.target.files[0],
-                    }))
-                  }
-                /> */}
-                <input type="file" onChange={handlesubmit} />
+                <input type="file" onChange={handlesubmitimage} />
+                <img
+                  src={url}
+                  alt="djehsjd"
+                  style={{ width: "5rem", height: "5rem" }}
+                />
               </Form.Group>
               <Input
                 placeholder="Description Title"
@@ -240,19 +374,29 @@ const AddProduct = () => {
                 }
                 style={{ marginBottom: 10 }}
               />
-              <Form.Group controlId="formFileMultiple" className="mb-3">
-                <Form.Label>Additional Images</Form.Label>
-                <Form.Control
-                  type="file"
-                  multiple
-                  onChange={(e) =>
-                    setProductDetails((prev) => ({
-                      ...prev,
-                      additionalImages: [...e.target.files],
-                    }))
-                  }
-                />
-              </Form.Group>
+              <input
+                type="file"
+                multiple
+                onChange={handleSubmitmultipleimages}
+              />
+              <div>
+                {uploadedImageUrls.map((url, index) => (
+                  <div key={index}>
+                    <img
+                      src={url}
+                      alt={`Uploaded ${index}`}
+                      style={{ width: "100px", margin: "10px" }}
+                    />
+                  </div>
+                ))}
+              </div>
+              <div>
+                {percentages.map((percent, index) => (
+                  <p key={index}>
+                    File {index + 1}: {percent}% uploaded
+                  </p>
+                ))}
+              </div>
             </div>
           )}
 
@@ -289,14 +433,24 @@ const AddProduct = () => {
                     >
                       <Form.Group controlId="formFile" className="mb-3">
                         <Form.Label>Style Image</Form.Label>
-                        <Form.Control
+                        {/* Pass styleIndex to handleSubmitStyleImage */}
+                        <input
                           type="file"
-                          onChange={(e) => {
-                            const updatedStyles = [...styles];
-                            updatedStyles[styleIndex].image = e.target.files[0];
-                            setStyles(updatedStyles);
-                          }}
+                          onChange={(e) =>
+                            handleSubmitStyleImage(e, styleIndex)
+                          }
                         />
+                        {style.imageUrl && (
+                          <img
+                            src={style.imageUrl}
+                            alt="Style Preview"
+                            style={{
+                              width: "5rem",
+                              height: "5rem",
+                              marginTop: "10px",
+                            }}
+                          />
+                        )}
                       </Form.Group>
                       <Button
                         type="link"
@@ -326,14 +480,25 @@ const AddProduct = () => {
                                 <Form.Label>Size Image</Form.Label>
                                 <Form.Control
                                   type="file"
-                                  onChange={(e) => {
-                                    const updatedStyles = [...styles];
-                                    updatedStyles[styleIndex].sizes[
+                                  onChange={(e) =>
+                                    handleSubmitSizeImage(
+                                      e,
+                                      styleIndex,
                                       sizeIndex
-                                    ].image = e.target.files[0];
-                                    setStyles(updatedStyles);
-                                  }}
+                                    )
+                                  } // Pass the indices
                                 />
+                                {size.imageUrl && (
+                                  <img
+                                    src={size.imageUrl}
+                                    alt="Style Preview"
+                                    style={{
+                                      width: "5rem",
+                                      height: "5rem",
+                                      marginTop: "10px",
+                                    }}
+                                  />
+                                )}
                               </Form.Group>
 
                               <Button
@@ -467,14 +632,30 @@ const AddProduct = () => {
                                 <Form.Label>Option Detail Image</Form.Label>
                                 <Form.Control
                                   type="file"
-                                  onChange={(e) => {
-                                    const updatedOptions = [...options];
-                                    updatedOptions[optionIndex].details[
+                                  onChange={(e) =>
+                                    handleOptionDetailImageUpload(
+                                      e,
+                                      optionIndex,
                                       detailIndex
-                                    ].image = e.target.files[0];
-                                    setOptions(updatedOptions);
-                                  }}
+                                    )
+                                  }
                                 />
+                                {/* Display uploaded image */}
+                                {options[optionIndex]?.details[detailIndex]
+                                  ?.image && (
+                                  <img
+                                    src={
+                                      options[optionIndex].details[detailIndex]
+                                        .image
+                                    }
+                                    alt="Option Detail"
+                                    style={{
+                                      width: "5rem",
+                                      height: "5rem",
+                                      marginTop: "10px",
+                                    }}
+                                  />
+                                )}
                               </Form.Group>
                             </div>
                           </List.Item>
