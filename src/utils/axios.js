@@ -14,6 +14,9 @@ const users = axios.create({
 const products = axios.create({
   baseURL: `${url}/products`, // Corrected template literal
 });
+const hangtag = axios.create({
+  baseURL: `${url}/hangtag`, // Corrected template literal
+});
 const quote = axios.create({
   baseURL: `${url}/getquote`, // Corrected template literal
 });
@@ -87,4 +90,14 @@ users.interceptors.request.use(
     return Promise.reject(err);
   }
 );
-export { products, quote, requestquote, blog, login, register, users };
+hangtag.interceptors.request.use(
+  (req) => {
+    // Add any custom headers or logic here if needed
+    return req;
+  },
+  (err) => {
+    return Promise.reject(err);
+  }
+);
+
+export { products, quote, requestquote, blog, login, register, users, hangtag };

@@ -12,6 +12,8 @@ import PrivateRoute from "./components/privateroutes";
 import AddProduct from "./components/productdetail";
 import AdminPortal from "./components/adminportal";
 import AllCloth1 from "./components/allclothing";
+import AddHangtag from "./components/hangtagdetail";
+import AllHangtags1 from "./components/allhangtags";
 
 const { Content } = Layout;
 
@@ -64,8 +66,8 @@ const AppRoutes = () => {
               <Route element={<PrivateRoute />}>
                 <Route path="/dashboard" element={<AdminPortal />} />
                 <Route path="/addproduct" element={<AddProduct />} />
-                <Route path="/all-cloth" element={<AllCloth1 />} />
-              </Route>
+                <Route path="/addhangtag" element={<AddHangtag />} />
+                </Route>
             </Routes>
           </Content>
         </Layout>

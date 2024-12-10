@@ -102,7 +102,7 @@ const Requestquote1 = () => {
       setLoading(true);
       try {
         const response = await requestquote.get("/"); // Check this endpoint
-        console.log("object");
+        console.log("object",response);
         if (response && response.data && response.data.data) {
           setRequestQuoteData(
             response.data.data.map((item, index) => ({
