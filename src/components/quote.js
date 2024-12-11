@@ -40,20 +40,12 @@ function Quote() {
       key: "artwork",
       render: (artwork) =>
         artwork.map((file) => {
-          const previewUrl = handleFilePreview(file);
           return (
-            <div key={file.uid} style={{ marginBottom: "10px" }}>
-              <p>{file.name}</p>
-              {previewUrl ? (
-                <img
-                  src={previewUrl}
-                  alt={file.name}
-                  style={{ width: "100px", height: "auto" }}
-                />
-              ) : (
-                <p>Preview not available</p> // Fallback in case of error
-              )}
-            </div>
+            <img
+              src={file}
+              alt="Artwork"
+              style={{ width: "5rem", height: "6rem" }}
+            />
           );
         }),
     },

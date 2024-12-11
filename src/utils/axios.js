@@ -26,6 +26,10 @@ const requestquote = axios.create({
 const blog = axios.create({
   baseURL: `${url}/blogs`, // Corrected template literal
 });
+const pendingcheckout = axios.create({
+  baseURL: `${url}/pendingcheckout`, // Corrected template literal
+});
+
 // Request interceptor for products
 products.interceptors.request.use(
   (req) => {
@@ -99,5 +103,24 @@ hangtag.interceptors.request.use(
     return Promise.reject(err);
   }
 );
+pendingcheckout.interceptors.request.use(
+  (req) => {
+    // Add any custom headers or logic here if needed
+    return req;
+  },
+  (err) => {
+    return Promise.reject(err);
+  }
+);
 
-export { products, quote, requestquote, blog, login, register, users, hangtag };
+export {
+  products,
+  quote,
+  requestquote,
+  blog,
+  login,
+  register,
+  users,
+  hangtag,
+  pendingcheckout,
+};
