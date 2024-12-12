@@ -11,6 +11,7 @@ import Dashboard from "./sider/dashboard";
 import { Dropdown, Menu, Button } from "antd";
 import { LogoutOutlined, DownOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
+import Designquote from "./designquote";
 
 const AdminPortal = () => {
   const [activeContent, setActiveContent] = useState("Welcome");
@@ -41,6 +42,8 @@ const AdminPortal = () => {
         return <Order />;
       case "Get a Quote":
         return <Quote />;
+        case "Design Quote":
+          return <Designquote />;
       case "Blog Management":
         return <Blog1 />;
       case "All Clothing":
@@ -78,6 +81,7 @@ const AdminPortal = () => {
           <a onClick={() => setActiveContent("Users")}>Users</a>
           <a onClick={() => setActiveContent("Orders")}>Orders</a>
           <a onClick={() => setActiveContent("Get a Quote")}>Get a Quote</a>
+          <a onClick={() => setActiveContent("Design Quote")}>Design Quote</a>
           <a onClick={() => setActiveContent("Blog Management")}>
             Blog Management
           </a>

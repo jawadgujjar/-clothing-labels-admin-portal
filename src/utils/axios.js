@@ -20,6 +20,9 @@ const quote = axios.create({
 const requestquote = axios.create({
   baseURL: `${url}/requestquote`, // Corrected template literal
 });
+const designquote = axios.create({
+  baseURL: `${url}/designQuote`, // Corrected template literal
+});
 const blog = axios.create({
   baseURL: `${url}/blogs`, // Corrected template literal
 });
@@ -87,4 +90,4 @@ users.interceptors.request.use(
     return Promise.reject(err);
   }
 );
-export { products, quote, requestquote, blog, login, register, users };
+export { products, quote, requestquote, blog, login, register, users,designquote };

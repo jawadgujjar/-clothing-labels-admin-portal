@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Image, message, Button } from "antd";
+import { Table, message, Button } from "antd";
 import "./quote.css";
 import { quote } from "../utils/axios"; // Assuming 'quote' is an axios instance or function
 
@@ -10,7 +10,6 @@ function Quote() {
     if (file && file.originFileObj instanceof File) {
       return URL.createObjectURL(file.originFileObj); // Generate preview URL
     } else {
-      console.warn("Invalid file object:", file);
       return null; // Return null if file object is invalid
     }
   };
@@ -40,21 +39,7 @@ function Quote() {
       key: "artwork",
       render: (artwork) =>
         artwork.map((file) => {
-          const previewUrl = handleFilePreview(file);
-          return (
-            <div key={file.uid} style={{ marginBottom: "10px" }}>
-              <p>{file.name}</p>
-              {previewUrl ? (
-                <img
-                  src={previewUrl}
-                  alt={file.name}
-                  style={{ width: "100px", height: "auto" }}
-                />
-              ) : (
-                <p>Preview not available</p> // Fallback in case of error
-              )}
-            </div>
-          );
+          return <img src={file} alt="Artwork" style={{width:"5rem",height:"6rem"}}/>;
         }),
     },
     {
@@ -106,25 +91,26 @@ function Quote() {
     },
   ];
 
-  useEffect(() => {
-    // Function to fetch data from API
-    const fetchQuotes = async () => {
-      try {
-        const response = await quote.get("/"); // Adjust the endpoint as per your API
-        setQuoteData(
-          response.data.quotes.map((item, index) => ({
-            ...item,
-            key: index, // Adding a unique key for each row
-          }))
-        );
-      } catch (error) {
-        console.error("Error fetching quotes:", error);
-        message.error("Failed to fetch quotes. Please try again later.");
-      }
-    };
+    useEffect(() => {
+      // Function to fetch data from API
+      const fetchQuotes = async () => {
+        try {
+          const response = await quote.get("/"); // Adjust the endpoint as per your API
+          console.log(response.data.quotes);
+          setQuoteData(
+            response.data.quotes.map((item, index) => ({
+              ...item,
+              key: index, // Adding a unique key for each row
+            }))
+          );
+        } catch (error) {
+          console.error("Error fetching quotes:", error);
+          message.error("Failed to fetch quotes. Please try again later.");
+        }
+      };
 
-    fetchQuotes();
-  }, []);
+      fetchQuotes();
+    }, []);
 
   return (
     <div className="quote-container">
