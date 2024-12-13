@@ -14,8 +14,7 @@ const AllCloth1 = () => {
       .get("/") // Relative path based on baseURL
       .then((response) => {
         setProduct(response.data.results); // Save data in state
-        console.log(response.data.results);
-      })
+       })
       .catch((error) => {
         console.error("Error fetching products:", error); // Handle error
       });

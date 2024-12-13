@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Card, Col, Row, Statistic } from "antd";
 import {
   LineChartOutlined,
@@ -18,12 +18,45 @@ import {
   Bar,
 } from "recharts"; // Updated to BarChart
 import "./dashboard.css";
+import { hangtag, products, users } from "../../utils/axios";
 
 const Dashboard = () => {
+  const [dashboardData, setDashboardData] = useState({
+    totalUsers: 0,
+    totalProducts: 0,
+    totalHangtags: 0,
+  });
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const hangtagResponse = await hangtag.get("/");
+        const productResponse = await products.get("/");
+        const userResponse = await users.get("/");
+
+        const totalHangtags = hangtagResponse.data.results.length || 0;
+        const totalProducts = productResponse.data.results.length || 0;
+        const totalUsers = userResponse.data.results.length || 0;
+
+        // Update state and localStorage
+        setDashboardData({ totalHangtags, totalProducts, totalUsers });
+        localStorage.setItem("totalhangtags", totalHangtags);
+        localStorage.setItem("totalproducts", totalProducts);
+        localStorage.setItem("totalusers", totalUsers);
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+
+  const { totalUsers, totalProducts, totalHangtags } = dashboardData;
+
   const data = [
     {
       title: "Total Users",
-      number: 150,
+      number: totalUsers,
       icon: <UserAddOutlined />,
       color: "#4CAF50",
     },
@@ -35,7 +68,7 @@ const Dashboard = () => {
     },
     {
       title: "Products",
-      number: 75,
+      number: totalProducts + totalHangtags, // Add the numeric values
       icon: <LineChartOutlined />,
       color: "#3F51B5",
     },

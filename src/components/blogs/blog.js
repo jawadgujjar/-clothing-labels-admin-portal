@@ -12,11 +12,14 @@ import {
   Table,
   Popconfirm,
 } from "antd";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { Storage } from "../../firebaseConfig";
 import {
-  UploadOutlined,
-  EditOutlined,
-  DeleteOutlined,
-} from "@ant-design/icons";
+  uploadBytes,
+  ref,
+  getDownloadURL,
+  uploadBytesResumable,
+} from "firebase/storage";
 import { blog } from "../../utils/axios";
 import "./blog.css";
 
@@ -25,7 +28,9 @@ const { Step } = Steps;
 function Blog1() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
-  const [image, setImage] = useState(null);
+  const [percent, setPercent] = useState("");
+  const [url, setUrl] = useState("");
+  const [uploadedImageUrl, setUploadedImageUrl] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [headings, setHeadings] = useState([]);
@@ -33,7 +38,43 @@ function Blog1() {
   const [newDescription, setNewDescription] = useState("");
   const [submittedData, setSubmittedData] = useState([]);
   const [editingIndex, setEditingIndex] = useState(null);
-  const [fileList, setFileList] = useState();
+  const date = new Date();
+
+  const showTime =
+    date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+  const handlesubmit = (e) => {
+    const uploadedFile = e.target.files[0]; // Get the uploaded file
+    if (uploadedFile) {
+      const imageDocument = ref(
+        Storage,
+        `images/${uploadedFile.name + showTime}`
+      );
+      const uploadTask = uploadBytesResumable(imageDocument, uploadedFile);
+
+      uploadTask.on("state_changed", (snapshot) => {
+        const percent = Math.round(
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+        );
+        setPercent(percent);
+      });
+
+      uploadBytes(imageDocument, uploadedFile)
+        .then(() => {
+          getDownloadURL(imageDocument)
+            .then((Url) => {
+              setUrl(Url);
+              setUploadedImageUrl(Url); // Set the uploaded image URL
+              console.log(Url);
+            })
+            .catch((error) => {
+              console.log(error.message, "error getting the image url");
+            });
+        })
+        .catch((error) => {
+          console.log(error.message);
+        });
+    }
+  };
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -47,23 +88,6 @@ function Blog1() {
     };
     fetchBlogs();
   }, []);
-  const handleFileChange = ({ fileList: newFileList }) => {
-    setFileList(newFileList);
-
-    if (newFileList.length > 0) {
-      const file = newFileList[0].originFileObj;
-      const reader = new FileReader();
-
-      reader.onload = (e) => {
-        const base64String = e.target.result;
-        setImage(base64String);
-      };
-
-      reader.readAsDataURL(file);
-    } else {
-      setImage(null);
-    }
-  };
 
   const next = () => {
     setCurrentStep(currentStep + 1);
@@ -105,7 +129,7 @@ function Blog1() {
     const blogData = {
       title: title,
       description: description,
-      image: image,
+      image: url,
       titledescriptions: headings.map((item) => ({
         descriptionTitle: item.heading,
         text: item.description,
@@ -136,7 +160,7 @@ function Blog1() {
     setTitle(blogToEdit.title);
     setDescription(blogToEdit.description);
     setHeadings(blogToEdit.headings || []);
-    setImage(blogToEdit.image);
+    setUrl(url);
     setEditingIndex(index);
     setCurrentStep(0);
     setIsModalVisible(true);
@@ -178,20 +202,6 @@ function Blog1() {
       dataIndex: "image",
       key: "image",
       render: (image) => <Image width={100} src={image} alt="Blog Image" />,
-    },
-    {
-      title: "Headings",
-      dataIndex: "headings",
-      key: "headings",
-      render: (headings) => (
-        <div>
-          {(headings || []).map((item, index) => (
-            <div key={index}>
-              <strong>{item.heading}</strong>: {item.description}
-            </div>
-          ))}
-        </div>
-      ),
     },
     {
       title: "Actions",
@@ -248,26 +258,8 @@ function Blog1() {
         <Form layout="vertical">
           {currentStep === 0 && (
             <>
-              <Form.Item label="Upload Image">
-                <Upload
-                  listType="picture"
-                  fileList={fileList}
-                  onChange={handleFileChange}
-                  beforeUpload={() => false} // Prevent auto-upload
-                >
-                  <Button icon={<UploadOutlined />}>Upload Image</Button>
-                </Upload>
-              </Form.Item>
-
-              {image && (
-                <Form.Item label="Image Preview">
-                  <Image
-                    width={200}
-                    src={image.thumbUrl || image}
-                    alt="Uploaded image"
-                  />
-                </Form.Item>
-              )}
+              <input type="file" onChange={handlesubmit} />
+              <img src={url} alt="image" />
 
               <Form.Item label="Title">
                 <Input

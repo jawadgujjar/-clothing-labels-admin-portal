@@ -8,10 +8,11 @@ import AllCloth1 from "./allclothing";
 import AllHangtags1 from "./allhangtags";
 import Requestquote1 from "./requestquote";
 import Dashboard from "./sider/dashboard";
-import { Dropdown, Menu, Button } from "antd";
+import { Dropdown, Menu } from "antd";
 import { LogoutOutlined, DownOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import Designquote from "./designquote";
+import PendingCheckoutTable from "./pendingcheckout";
 
 const AdminPortal = () => {
   const [activeContent, setActiveContent] = useState("Welcome");
@@ -50,6 +51,8 @@ const AdminPortal = () => {
         return <AllCloth1 />;
       case "All Hang Tags":
         return <AllHangtags1 />;
+      case "Pending Checkouts":
+        return <PendingCheckoutTable />;
       case "Request a Quote":
         return <Requestquote1 />;
       default:
@@ -85,8 +88,18 @@ const AdminPortal = () => {
           <a onClick={() => setActiveContent("Blog Management")}>
             Blog Management
           </a>
-          <Dropdown overlay={menu} trigger={["click"]} className="products-dropdown">
-            <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
+          <a onClick={() => setActiveContent("Pending Checkouts")}>
+            Pending Checkouts
+          </a>
+          <Dropdown
+            overlay={menu}
+            trigger={["click"]}
+            className="products-dropdown"
+          >
+            <a
+              className="ant-dropdown-link"
+              onClick={(e) => e.preventDefault()}
+            >
               Products <DownOutlined />
             </a>
           </Dropdown>

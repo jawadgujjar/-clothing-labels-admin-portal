@@ -39,7 +39,13 @@ function Quote() {
       key: "artwork",
       render: (artwork) =>
         artwork.map((file) => {
-          return <img src={file} alt="Artwork" style={{width:"5rem",height:"6rem"}}/>;
+          return (
+            <img
+              src={file}
+              alt="Artwork"
+              style={{ width: "5rem", height: "6rem" }}
+            />
+          );
         }),
     },
     {

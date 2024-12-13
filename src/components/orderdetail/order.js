@@ -1,146 +1,51 @@
-import React, { useState } from 'react';
-import { Table, Row, Col, Card, Button, Divider } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Table, Row, Col, Card, Button, Divider,message } from 'antd';
+import { orders } from "../../utils/axios";
 import './order.css';
 
 const Order = () => {
-  // Static Data (For Multiple Clients)
-  const clients = [
-    {
-      key: '1',
-      email: 'john@example.com',
-      firstName: 'John',
-      lastName: 'Doe',
-      streetAddress: '123 Main St',
-      city: 'New York',
-      zipCode: '10001',
-      phone: '(123) 456-7890',
-      country: 'USA',
-      state: 'NY',
-      shippingMethod: 'Standard Shipping',
-      paymentMethod: 'Credit Card',
-      items: [
-        {
-          id: 1,
-          name: 'Custom T-Shirt',
-          imageUrl: 'https://via.placeholder.com/100',
-          quantity: 2,
-          details: {
-            area: 'Front',
-            style: 'V-Neck',
-            size: 'L',
-            backingOptions: 'Cotton',
-            metallicThread: 'No',
-            sizeSymbols: 'Yes',
-            colorVersions: 'Red',
-            proofOptions: 'Digital Proof',
-            turnaroundOptions: '5-7 Days',
-          },
-        },
-        {
-          id: 2,
-          name: 'Custom Mug',
-          imageUrl: 'https://via.placeholder.com/100',
-          quantity: 1,
-          details: {
-            area: 'Front',
-            style: 'Classic',
-            size: 'Standard',
-            backingOptions: 'Ceramic',
-            metallicThread: 'No',
-            sizeSymbols: 'No',
-            colorVersions: 'White',
-            proofOptions: 'Physical Proof',
-            turnaroundOptions: '2-3 Days',
-          },
-        },
-      ],
-      paymentHistory: [
-        {
-          id: 1,
-          date: '2024-10-01',
-          amount: '$50.00',
-          method: 'Credit Card',
-          status: 'Paid',
-        },
-        {
-          id: 2,
-          date: '2024-09-15',
-          amount: '$75.00',
-          method: 'PayPal',
-          status: 'Paid',
-        },
-      ],
-    },
-    // Second Client Data
-    {
-      key: '2',
-      email: 'jane@example.com',
-      firstName: 'Jane',
-      lastName: 'Smith',
-      streetAddress: '456 Elm St',
-      city: 'Los Angeles',
-      zipCode: '90001',
-      phone: '(987) 654-3210',
-      country: 'USA',
-      state: 'CA',
-      shippingMethod: 'Express Shipping',
-      paymentMethod: 'PayPal',
-      items: [
-        {
-          id: 1,
-          name: 'Custom Hoodie',
-          imageUrl: 'https://via.placeholder.com/100',
-          quantity: 1,
-          details: {
-            area: 'Back',
-            style: 'Pullover',
-            size: 'M',
-            backingOptions: 'Polyester',
-            metallicThread: 'Yes',
-            sizeSymbols: 'No',
-            colorVersions: 'Black',
-            proofOptions: 'Digital Proof',
-            turnaroundOptions: '3-5 Days',
-          },
-        },
-        {
-          id: 2,
-          name: 'Custom Water Bottle',
-          imageUrl: 'https://via.placeholder.com/100',
-          quantity: 3,
-          details: {
-            area: 'Front',
-            style: 'Classic',
-            size: '500ml',
-            backingOptions: 'Stainless Steel',
-            metallicThread: 'No',
-            sizeSymbols: 'Yes',
-            colorVersions: 'Blue',
-            proofOptions: 'Physical Proof',
-            turnaroundOptions: '4-6 Days',
-          },
-        },
-      ],
-      paymentHistory: [
-        {
-          id: 1,
-          date: '2024-10-10',
-          amount: '$40.00',
-          method: 'PayPal',
-          status: 'Paid',
-        },
-        {
-          id: 2,
-          date: '2024-09-20',
-          amount: '$90.00',
-          method: 'Credit Card',
-          status: 'Paid',
-        },
-      ],
-    },
-  ];
-
+  // State for clients data
+  const [clients, setClients] = useState([]);
   const [expandedRowKeys, setExpandedRowKeys] = useState([]);
+
+  useEffect(() => {
+    // Function to fetch data from API
+    const fetchQuotes = async () => {
+      try {
+        const response = await orders.get("/"); // Adjust the endpoint as per your API
+        console.log(response.data);
+      
+        // Accessing the data field inside the response and then mapping through it
+        setClients(
+          response.data.data.map((item, index) => ({
+            key: index, // Adding a unique key for each row
+            name: item.user.name,
+            email: item.user.email,
+            phoneNumber: item.user.phoneNumber,
+            billingCity: item.billingAddress.city,
+            billingState: item.billingAddress.stateOrProvince,
+            billingZip: item.billingAddress.zipOrPostalCode,
+            shippingCity: item.shippingAddress.city,
+            shippingState: item.shippingAddress.stateOrProvince,
+            shippingZip: item.shippingAddress.zipOrPostalCode,
+            paymentMethod: item.payment.method,
+            paymentAmount: item.payment.totalAmount,
+            paymentStatus: item.payment.status,
+            transactionId: item.payment.transactionId,
+            checkoutProductName: item.checkoutProducts.length > 0 ? item.checkoutProducts[0].productName : 'No products',
+            checkoutProductSize: item.checkoutProducts.length > 0 ? item.checkoutProducts[0].size : 'N/A',
+            checkoutProductArtwork: item.checkoutProducts.length > 0 ? item.checkoutProducts[0].artworkFile : 'No artwork',
+          }))
+        );
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        message.error("Failed to fetch quotes. Please try again later.");
+      }
+      
+    };
+
+    fetchQuotes();
+  }, []);
 
   // Toggle row expansion
   const onExpand = (expanded, record) => {
@@ -153,25 +58,25 @@ const Order = () => {
       title: 'Email Address',
       dataIndex: 'email',
       key: 'email',
-      width: 180, // Adjusted width
+      width: 180,
     },
     {
       title: 'First Name',
       dataIndex: 'firstName',
       key: 'firstName',
-      width: 150, // Adjusted width
+      width: 150,
     },
     {
       title: 'Last Name',
       dataIndex: 'lastName',
       key: 'lastName',
-      width: 150, // Adjusted width
+      width: 150,
     },
     {
       title: 'Phone Number',
       dataIndex: 'phone',
       key: 'phone',
-      width: 150, // Adjusted width
+      width: 150,
     },
     {
       title: 'Actions',
@@ -190,7 +95,7 @@ const Order = () => {
           {expandedRowKeys.includes(record.key) ? 'Hide Order Details' : 'Show Order Details'}
         </Button>
       ),
-      width: 180, // Adjusted width
+      width: 180,
     },
   ];
 
@@ -199,14 +104,32 @@ const Order = () => {
     return (
       <Row gutter={16} style={{ marginTop: '20px' }}>
         <Col xs={24} sm={12} md={8}>
-          <Card title="Shipping Method" bordered={false}>
-            <div>{record.shippingMethod}</div>
+          <Card title="Billing Address" bordered={false}>
+            <div><strong>First Name:</strong> {record.firstName}</div>
+            <div><strong>Middle Name:</strong> {record.middleName}</div>
+            <div><strong>Last Name:</strong> {record.lastName}</div>
+            <div><strong>Company Name:</strong> {record.companyName}</div>
+            <div><strong>Phone Number:</strong> {record.phone}</div>
+            <div><strong>Street Address:</strong> {record.streetAddress}</div>
+            <div><strong>City:</strong> {record.city}</div>
+            <div><strong>State/Province:</strong> {record.state}</div>
+            <div><strong>Zip/Postal Code:</strong> {record.zipCode}</div>
+            <div><strong>Country:</strong> {record.country}</div>
           </Card>
         </Col>
 
         <Col xs={24} sm={12} md={8}>
-          <Card title="Payment Method" bordered={false}>
-            <div>{record.paymentMethod}</div>
+          <Card title="Shipping Address" bordered={false}>
+            <div><strong>First Name:</strong> {record.firstName}</div>
+            <div><strong>Middle Name:</strong> {record.middleName}</div>
+            <div><strong>Last Name:</strong> {record.lastName}</div>
+            <div><strong>Company Name:</strong> {record.companyName}</div>
+            <div><strong>Phone Number:</strong> {record.phone}</div>
+            <div><strong>Street Address:</strong> {record.streetAddress}</div>
+            <div><strong>City:</strong> {record.city}</div>
+            <div><strong>State/Province:</strong> {record.state}</div>
+            <div><strong>Zip/Postal Code:</strong> {record.zipCode}</div>
+            <div><strong>Country:</strong> {record.country}</div>
           </Card>
         </Col>
 
@@ -281,7 +204,7 @@ const Order = () => {
         onExpand={onExpand}
         expandedRowRender={expandedRowRender}
         pagination={false}
-        scroll={{ x: 900 }}  // Adjusted table width for responsiveness
+        scroll={{ x: 900 }}
         bordered
         size="middle"
         className="order-table"

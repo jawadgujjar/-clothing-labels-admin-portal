@@ -19,7 +19,7 @@ const Users1 = () => {
           },
         });
         setData(response.data.results);
-        console.log("id", response.data.results);
+        localStorage.setItem("totalusers", response.data.results.length);
       } catch (error) {
         console.error("Error fetching users:", error);
       }

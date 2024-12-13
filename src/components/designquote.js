@@ -1,81 +1,78 @@
-import React, { useState, useEffect } from 'react';
-import { Table, Modal, Button, message } from 'antd';
-import { designquote } from '../utils/axios';
-import './designquote.css';
+import React, { useState, useEffect } from "react";
+import { Table, Modal, Button, message } from "antd";
+import { designquote } from "../utils/axios";
+import "./designquote.css";
 
 function Designquote() {
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [previewImage, setPreviewImage] = useState('');
+  const [previewImage, setPreviewImage] = useState("");
   const [designquoteData, setDesignquoteData] = useState([]);
 
   const handleDelete = async (id) => {
     try {
       const response = await designquote.delete(`/${id}`);
-      if (response.status === 200) {
+      if (response.status === 204) {
         // If the response is successful, remove the deleted quote from state
         setDesignquoteData(designquoteData.filter((quote) => quote.id !== id));
-        message.success('Quote deleted successfully');
+        message.success("Quote deleted successfully");
       } else {
-        throw new Error('Failed to delete');
+        throw new Error("Failed to delete");
       }
     } catch (error) {
-      console.error('Error deleting quote:', error);
-      message.error('Failed to delete quote. Please try again later.');
+      console.error("Error deleting quote:", error);
+      message.error("Failed to delete quote. Please try again later.");
     }
   };
 
   const columns = [
     {
-      title: 'Product Name',
-      dataIndex: 'productName',
-      key: 'productName',
+      title: "Product Name",
+      dataIndex: "productName",
+      key: "productName",
     },
     {
-      title: 'Image',
-      dataIndex: 'image',
-      key: 'image',
+      title: "Image",
+      dataIndex: "image",
+      key: "image",
       render: (text) => (
         <img
           src={text}
           alt="product"
-          style={{ width: '50px', height: '50px', cursor: 'pointer' }}
+          style={{ width: "50px", height: "50px", cursor: "pointer" }}
           onClick={() => handleImageClick(text)}
         />
       ),
     },
     {
-      title: 'Size',
-      dataIndex: 'size',
-      key: 'size',
+      title: "Size",
+      dataIndex: "size",
+      key: "size",
     },
     {
-      title: 'Turnaround',
-      dataIndex: 'turnaround',
-      key: 'turnaround',
+      title: "Turnaround",
+      dataIndex: "turnaround",
+      key: "turnaround",
     },
     {
-      title: 'User Name',
-      dataIndex: 'userName',
-      key: 'userName',
+      title: "User Name",
+      dataIndex: "userName",
+      key: "userName",
     },
     {
-      title: 'Email',
-      dataIndex: 'email',
-      key: 'email',
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
     },
     {
-      title: 'Phone Number',
-      dataIndex: 'phoneNumber',
-      key: 'phoneNumber',
+      title: "Phone Number",
+      dataIndex: "phoneNumber",
+      key: "phoneNumber",
     },
     {
-      title: 'Actions',
-      key: 'actions',
+      title: "Actions",
+      key: "actions",
       render: (text, record) => (
-        <Button
-          danger
-          onClick={() => handleDelete(record.id)}
-        >
+        <Button danger onClick={() => handleDelete(record.id)}>
           Delete
         </Button>
       ),
@@ -89,13 +86,13 @@ function Designquote() {
 
   const handleModalClose = () => {
     setIsModalVisible(false);
-    setPreviewImage('');
+    setPreviewImage("");
   };
 
   useEffect(() => {
     const fetchQuotes = async () => {
       try {
-        const response = await designquote.get('/');
+        const response = await designquote.get("/");
         if (response.status === 200) {
           setDesignquoteData(
             response.data.map((item, index) => {
@@ -103,18 +100,18 @@ function Designquote() {
               return {
                 ...item,
                 key: index, // Adding a unique key for each row
-                userName: user.name || 'N/A',
-                email: user.email || 'N/A',
-                phoneNumber: user.phonenumber || 'N/A',
+                userName: user.name || "N/A",
+                email: user.email || "N/A",
+                phoneNumber: user.phonenumber || "N/A",
               };
             })
           );
         } else {
-          throw new Error('Failed to fetch data');
+          throw new Error("Failed to fetch data");
         }
       } catch (error) {
-        console.error('Error fetching quotes:', error);
-        message.error('Failed to fetch quotes. Please try again later.');
+        console.error("Error fetching quotes:", error);
+        message.error("Failed to fetch quotes. Please try again later.");
       }
     };
 
@@ -124,9 +121,13 @@ function Designquote() {
   return (
     <div className="designquote-container">
       <h1>Design Quote Table</h1>
-      <Table dataSource={designquoteData} columns={columns} pagination={false} />
+      <Table
+        dataSource={designquoteData}
+        columns={columns}
+        pagination={false}
+      />
       <Modal visible={isModalVisible} footer={null} onCancel={handleModalClose}>
-        <img src={previewImage} alt="Preview" style={{ width: '100%' }} />
+        <img src={previewImage} alt="Preview" style={{ width: "100%" }} />
       </Modal>
     </div>
   );
