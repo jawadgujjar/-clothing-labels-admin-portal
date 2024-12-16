@@ -129,7 +129,7 @@ function Quote() {
           className="custom-table" // Add a custom class to apply styles
         />
       </div>
-    </div>
+    </div>  
   );
 }
 

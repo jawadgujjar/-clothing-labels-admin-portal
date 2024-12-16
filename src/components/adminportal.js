@@ -49,7 +49,7 @@ const AdminPortal = () => {
       case "All Hang Tags":
         return <AllHangtags1 />;
       case "Pending Checkouts":
-        return <PendingCheckoutTable />;
+        return <PendingCheckoutTable />;  
       case "Request a Quote":
         return <Requestquote1 />;
       default:
