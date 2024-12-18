@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Button,
   Modal,
@@ -12,46 +12,85 @@ import {
   Table,
   Popconfirm,
 } from "antd";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { Storage } from "../../firebaseConfig";
 import {
-  UploadOutlined,
-  EditOutlined,
-  DeleteOutlined,
-} from "@ant-design/icons";
+  uploadBytes,
+  ref,
+  getDownloadURL,
+  uploadBytesResumable,
+} from "firebase/storage";
 import { blog } from "../../utils/axios";
 import "./blog.css";
- 
+
 const { Step } = Steps;
 
 function Blog1() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
-  const [image, setImage] = useState(null);
+  const [percent, setPercent] = useState("");
+  const [url, setUrl] = useState("");
+  const [uploadedImageUrl, setUploadedImageUrl] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [headings, setHeadings] = useState([]); // Ensure it's always an array
+  const [headings, setHeadings] = useState([]);
   const [newHeading, setNewHeading] = useState("");
   const [newDescription, setNewDescription] = useState("");
   const [submittedData, setSubmittedData] = useState([]);
-  const [editingIndex, setEditingIndex] = useState(null); // Track the index of the blog being edited
-  const [fileList, setFileList] = useState();
+  const [editingIndex, setEditingIndex] = useState(null);
+  const date = new Date();
+  const [newImage, setNewImage] = useState("");
 
-  const handleFileChange = ({ fileList: newFileList }) => {
-    setFileList(newFileList);
+  const showTime =
+    date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+    const handleImageUpload = (e, setImageUrl) => {
+      const uploadedFile = e.target.files[0]; // Get the uploaded file
+      if (uploadedFile) {
+        const imageDocument = ref(
+          Storage,
+          `images/${uploadedFile.name + showTime}`
+        );
+        const uploadTask = uploadBytesResumable(imageDocument, uploadedFile);
+    
+        uploadTask.on("state_changed", (snapshot) => {
+          const percent = Math.round(
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+          );
+          setPercent(percent);
+        });
+    
+        uploadBytes(imageDocument, uploadedFile)
+          .then(() => {
+            getDownloadURL(imageDocument)
+              .then((Url) => {
+                setImageUrl(Url); // Set the uploaded image URL
+                console.log(Url);
+              })
+              .catch((error) => {
+                console.log(error.message, "error getting the image url");
+              });
+          })
+          .catch((error) => {
+            console.log(error.message);
+          });
+      }
+    };
+    
 
-    if (newFileList.length > 0) {
-      const file = newFileList[0].originFileObj; // Get the uploaded file object
-      const reader = new FileReader();
-
-      reader.onload = (e) => {
-        const base64String = e.target.result;
-        setImage(base64String); // Store the Base64 string in the state
-      };
-
-      reader.readAsDataURL(file); // Convert file to Base64
-    } else {
-      setImage(null); // Clear image if no file is uploaded
-    }
-  };
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        const response = await blog.get("/"); // API call to fetch blogs
+        console.log(response.data); // Check if the image URL is being returned
+        setSubmittedData(response.data); // Assuming response.data contains the list of blogs
+      } catch (error) {
+        message.error("Failed to fetch blog posts.");
+        console.error("Error fetching blogs:", error);
+      }
+    };
+    
+    fetchBlogs();
+  }, []);
 
   const next = () => {
     setCurrentStep(currentStep + 1);
@@ -65,7 +104,7 @@ function Blog1() {
     if (newHeading && newDescription) {
       setHeadings([
         ...headings,
-        { heading: newHeading, description: newDescription },
+        { heading: newHeading, description: newDescription,image:newImage },
       ]);
       setNewHeading("");
       setNewDescription("");
@@ -91,54 +130,65 @@ function Blog1() {
 
   const handleSubmit = async () => {
     const blogData = {
-      title: title, // Title from state
-      description: description, // Description from state
-      image: image, // Base64 string from the uploaded file
+      title: title,
+      description: description,
+      image: url,
       titledescriptions: headings.map((item) => ({
         descriptionTitle: item.heading,
         text: item.description,
-      })), // Map headings to match titledescriptions schema
+        image: newImage,  // Ensure the image is included
+      })),
     };
-    console.log(blogData);
+  
+    console.log("Submitting Blog Data:", blogData); // Log data to console
+  
     try {
       if (editingIndex !== null) {
-        // Edit existing blog post logic (same as before)
         const updatedData = [...submittedData];
         updatedData[editingIndex] = blogData;
         setSubmittedData(updatedData);
         message.success("Blog post updated!");
       } else {
-        // Use getquote to make a POST request for submitting the blog
-        const response = await blog.post("/", blogData); // Replace '/blogs' with your actual API endpoint
-
-        // Add the new blog data to the list
+        const response = await blog.post("/", blogData);
         setSubmittedData([response.data, ...submittedData]);
         message.success("Blog post submitted!");
       }
-
+  
       closeModal();
     } catch (error) {
       message.error("Failed to submit blog post!");
       console.error("Error submitting blog:", error);
     }
   };
-
+  
   const handleEdit = (index) => {
     const blogToEdit = submittedData[index];
     setTitle(blogToEdit.title);
     setDescription(blogToEdit.description);
-    setHeadings(blogToEdit.headings || []); // Ensure headings is an array
-    setImage(blogToEdit.image);
-    setEditingIndex(index); // Set the editing index to know which blog is being edited
-    setCurrentStep(0); // Reset step to 0 for the edit
-    setIsModalVisible(true); // Open the modal for editing
+    setHeadings(blogToEdit.headings || []);
+    setUrl(url);
+    setEditingIndex(index);
+    setCurrentStep(0);
+    setIsModalVisible(true);
   };
 
-  const handleDelete = (index) => {
-    const updatedData = [...submittedData];
-    updatedData.splice(index, 1); // Remove the blog at the specified index
-    setSubmittedData(updatedData);
-    message.success("Blog post deleted!");
+  const handleDelete = async (id) => {
+    try {
+      // Make the API call to delete the blog post using axios
+      const response = await blog.delete(`/${id}`); // Adjust the URL based on your backend
+
+      // Checking for 204 status code for successful deletion
+      if (response.status === 204) {
+        // Filter out the deleted blog post from the state
+        const updatedData = submittedData.filter((blog) => blog.id !== id); // Adjust based on your data structure
+        setSubmittedData(updatedData); // Update the state with the remaining blogs
+        message.success("Blog post deleted!"); // Show success message
+      } else {
+        throw new Error("Failed to delete blog post");
+      }
+    } catch (error) {
+      message.error("Error deleting blog post!"); // Show error message if the API call fails
+    }
   };
 
   // Columns for the Table
@@ -160,34 +210,20 @@ function Blog1() {
       render: (image) => <Image width={100} src={image} alt="Blog Image" />,
     },
     {
-      title: "Headings",
-      dataIndex: "headings",
-      key: "headings",
-      render: (headings) => (
-        <div>
-          {(headings || []).map((item, index) => (
-            <div key={index}>
-              <strong>{item.heading}</strong>: {item.description}
-            </div>
-          ))}
-        </div>
-      ),
-    },
-    {
       title: "Actions",
       key: "actions",
       render: (_, record, index) => (
         <Space>
           <Button
             icon={<EditOutlined />}
-            onClick={() => handleEdit(index)}
+            onClick={() => handleEdit(record.id)}
             size="small"
           >
             Edit
           </Button>
           <Popconfirm
             title="Are you sure you want to delete this blog?"
-            onConfirm={() => handleDelete(index)}
+            onConfirm={() => handleDelete(record.id)}
             okText="Yes"
             cancelText="No"
           >
@@ -226,87 +262,98 @@ function Blog1() {
         </Steps>
 
         <Form layout="vertical">
-          {currentStep === 0 && (
-            <>
-              <Form.Item label="Upload Image">
-                <Upload
-                  listType="picture"
-                  fileList={fileList}
-                  onChange={handleFileChange}
-                  beforeUpload={() => false} // Prevent auto-upload
-                >
-                  <Button icon={<UploadOutlined />}>Upload Image</Button>
-                </Upload>
-              </Form.Item>
+        {currentStep === 0 && (
+  <>
+    <input
+      type="file"
+      onChange={(e) => handleImageUpload(e, setUrl)}
+    />
+    <img src={url} alt="Uploaded" style={{ maxWidth: "100px" }} />
 
-              {image && (
-                <Form.Item label="Image Preview">
-                  <Image
-                    width={200}
-                    src={image.thumbUrl || image}
-                    alt="Uploaded image"
-                  />
-                </Form.Item>
-              )}
+    <Form.Item label="Title">
+      <Input
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        placeholder="Enter title"
+      />
+    </Form.Item>
 
-              <Form.Item label="Title">
-                <Input
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Enter title"
-                />
-              </Form.Item>
+    <Form.Item label="Description">
+      <Input.TextArea
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        placeholder="Enter description"
+        rows={4}
+      />
+    </Form.Item>
+  </>
+)}
 
-              <Form.Item label="Description">
-                <Input.TextArea
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Enter description"
-                  rows={4}
-                />
-              </Form.Item>
-            </>
-          )}
+{currentStep === 1 && (
+  <>
+    <Form.Item label="Add Heading">
+      <Input
+        value={newHeading}
+        onChange={(e) => setNewHeading(e.target.value)}
+        placeholder="Enter heading"
+      />
+    </Form.Item>
 
-          {currentStep === 1 && (
-            <>
-              <Form.Item label="Add Heading">
-                <Input
-                  value={newHeading}
-                  onChange={(e) => setNewHeading(e.target.value)}
-                  placeholder="Enter heading"
-                />
-              </Form.Item>
+    <Form.Item label="Add Description">
+      <Input.TextArea
+        value={newDescription}
+        onChange={(e) => setNewDescription(e.target.value)}
+        placeholder="Enter description"
+        rows={4}
+      />
+    </Form.Item>
 
-              <Form.Item label="Add Description">
-                <Input.TextArea
-                  value={newDescription}
-                  onChange={(e) => setNewDescription(e.target.value)}
-                  placeholder="Enter description"
-                  rows={4}
-                />
-              </Form.Item>
+    <Form.Item label="Upload Image">
+      <input
+        type="file"
+        onChange={(e) => handleImageUpload(e, setNewImage)}
+      />
+      {newImage && (
+        <img
+          src={newImage}
+          alt="Uploaded"
+          style={{ maxWidth: "100px", display: "block", marginBottom: "10px" }}
+        />
+      )}
+    </Form.Item>
 
-              <Button onClick={addHeading} type="dashed">
-                Add Heading and Description
-              </Button>
+    <Button onClick={addHeading} type="dashed">
+      Add Heading, Description, and Image
+    </Button>
 
-              <div style={{ marginTop: "20px" }}>
-                <h3>Added Headings and Descriptions:</h3>
-                {headings && headings.length > 0 ? (
-                  headings.map((item, index) => (
-                    <Space key={index} direction="vertical">
-                      <div>
-                        <strong>{item.heading}</strong>: {item.description}
-                      </div>
-                    </Space>
-                  ))
-                ) : (
-                  <p>No headings and descriptions added yet.</p>
-                )}
-              </div>
-            </>
-          )}
+    <div style={{ marginTop: "20px" }}>
+      <h3>Added Headings, Descriptions, and Images:</h3>
+      {headings && headings.length > 0 ? (
+        headings.map((item, index) => (
+          <Space
+            key={index}
+            direction="vertical"
+            style={{ marginBottom: "10px", display: "flex", alignItems: "flex-start" }}
+          >
+            <div>
+              <strong>{item.heading}</strong>: {item.description}
+            </div>
+            {item.image && (
+              <img
+                src={item.image}
+                alt="Uploaded"
+                style={{ width: "100px", height: "100px", marginBottom: "10px" }}
+              />
+            )}
+          </Space>
+        ))
+      ) : (
+        <p>No headings, descriptions, or images added yet.</p>
+      )}
+    </div>
+  </>
+)}
+
         </Form>
 
         <div className="modal-actions">
@@ -339,5 +386,3 @@ function Blog1() {
 }
 
 export default Blog1;
-
-

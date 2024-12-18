@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Image, message } from "antd";
+import { Table, message, Button } from "antd";
 import "./quote.css";
 import { quote } from "../utils/axios"; // Assuming 'quote' is an axios instance or function
 
@@ -10,8 +10,19 @@ function Quote() {
     if (file && file.originFileObj instanceof File) {
       return URL.createObjectURL(file.originFileObj); // Generate preview URL
     } else {
-      console.warn("Invalid file object:", file);
       return null; // Return null if file object is invalid
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      const response = await quote.delete(`/${id}`);
+      // If the response is successful, remove the deleted quote from state
+      setQuoteData(quoteData.filter((quote) => quote.id !== id));
+      message.success("Quote deleted successfully");
+    } catch (error) {
+      console.error("Error deleting quote:", error);
+      message.error("Failed to delete quote. Please try again later.");
     }
   };
 
@@ -28,20 +39,12 @@ function Quote() {
       key: "artwork",
       render: (artwork) =>
         artwork.map((file) => {
-          const previewUrl = handleFilePreview(file);
           return (
-            <div key={file.uid} style={{ marginBottom: "10px" }}>
-              <p>{file.name}</p>
-              {previewUrl ? (
-                <img
-                  src={previewUrl}
-                  alt={file.name}
-                  style={{ width: "100px", height: "auto" }}
-                />
-              ) : (
-                <p>Preview not available</p> // Fallback in case of error
-              )}
-            </div>
+            <img
+              src={file}
+              alt="Artwork"
+              style={{ width: "5rem", height: "6rem" }}
+            />
           );
         }),
     },
@@ -80,6 +83,18 @@ function Quote() {
       dataIndex: "comments",
       key: "comments",
     },
+    {
+      title: "Actions",
+      key: "actions",
+      render: (text, record) => (
+        <Button
+          danger
+          onClick={() => handleDelete(record.id)} // Assuming `id` is the identifier for the quote
+        >
+          Delete
+        </Button>
+      ),
+    },
   ];
 
   useEffect(() => {
@@ -87,6 +102,7 @@ function Quote() {
     const fetchQuotes = async () => {
       try {
         const response = await quote.get("/"); // Adjust the endpoint as per your API
+        console.log(response.data.quotes);
         setQuoteData(
           response.data.quotes.map((item, index) => ({
             ...item,

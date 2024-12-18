@@ -14,15 +14,28 @@ const users = axios.create({
 const products = axios.create({
   baseURL: `${url}/products`, // Corrected template literal
 });
+const hangtag = axios.create({
+  baseURL: `${url}/hangtag`, // Corrected template literal
+});
 const quote = axios.create({
   baseURL: `${url}/getquote`, // Corrected template literal
 });
 const requestquote = axios.create({
   baseURL: `${url}/requestquote`, // Corrected template literal
 });
+const designquote = axios.create({
+  baseURL: `${url}/designQuote`, // Corrected template literal
+});
 const blog = axios.create({
   baseURL: `${url}/blogs`, // Corrected template literal
 });
+const pendingcheckout = axios.create({
+  baseURL: `${url}/pendingcheckout`, // Corrected template literal
+});
+const orders = axios.create({
+  baseURL: `${url}/checkout`, // Corrected template literal
+});
+
 // Request interceptor for products
 products.interceptors.request.use(
   (req) => {
@@ -87,4 +100,53 @@ users.interceptors.request.use(
     return Promise.reject(err);
   }
 );
-export { products, quote, requestquote, blog, login, register, users };
+hangtag.interceptors.request.use(
+  (req) => {
+    // Add any custom headers or logic here if needed
+    return req;
+  },
+  (err) => {
+    return Promise.reject(err);
+  }
+);
+pendingcheckout.interceptors.request.use(
+  (req) => {
+    // Add any custom headers or logic here if needed
+    return req;
+  },
+  (err) => {
+    return Promise.reject(err);
+  }
+);
+designquote.interceptors.request.use(
+  (req) => {
+    // Add any custom headers or logic here if needed
+    return req;
+  },
+  (err) => {
+    return Promise.reject(err);
+  }
+);
+orders.interceptors.request.use(
+  (req) => {
+    // Add any custom headers or logic here if needed
+    return req;
+  },
+  (err) => {
+    return Promise.reject(err);
+  }
+);
+
+export {
+  products,
+  quote,
+  requestquote,
+  blog,
+  login,
+  register,
+  users,
+  hangtag,
+  pendingcheckout,
+  designquote,
+  orders,
+};

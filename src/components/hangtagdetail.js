@@ -10,7 +10,7 @@ import {
   message,
 } from "antd";
 import Form from "react-bootstrap/Form";
-import { products } from "../utils/axios"; // Import the interceptor
+import { hangtag } from "../utils/axios"; // Import the interceptor
 import { Storage } from "../firebaseConfig";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid"; // To generate unique IDs for each style
@@ -22,7 +22,7 @@ import {
 } from "firebase/storage";
 const { Step } = Steps;
 
-const AddProduct = () => {
+const AddHangtag = () => {
   const [current, setCurrent] = useState(0);
   const [percent, setPercent] = useState("");
   const [percentages, setPercentages] = useState([]); // Track upload progress for multiple files
@@ -288,7 +288,7 @@ const AddProduct = () => {
     };
 
     try {
-      const response = await products.post("/", productData); // Replace '/api/products' with your actual endpoint
+      const response = await hangtag.post("/", productData); // Replace '/api/products' with your actual endpoint
       console.log("API Response:", response.data);
       message.success("Product saved successfully!");
       setIsModalOpen(false);
@@ -322,10 +322,9 @@ const AddProduct = () => {
         width={800}
       >
         <Steps current={current}>
-          <Step title="Product Details" />
+          <Step title="Hangtag Details" />
           <Step title="Styles" />
           <Step title="Options" />
-          <Step title="Product Description" />{" "}
         </Steps>
 
         <div style={{ marginTop: 24 }}>
@@ -333,7 +332,7 @@ const AddProduct = () => {
           {current === 0 && (
             <div>
               <Input
-                placeholder="Product Name"
+                placeholder="Hangtag Name"
                 value={productDetails.name}
                 onChange={(e) =>
                   setProductDetails((prev) => ({
@@ -344,11 +343,11 @@ const AddProduct = () => {
                 style={{ marginBottom: 10 }}
               />
               <Form.Group controlId="formFile" className="mb-3">
-                <Form.Label>Product Image</Form.Label>
+                <Form.Label>Hangtag Image</Form.Label>
                 <input type="file" onChange={handlesubmitimage} />
                 <img
                   src={url}
-                  alt="djehsjd"
+                  alt="Add image"
                   style={{ width: "5rem", height: "5rem" }}
                 />
               </Form.Group>
@@ -585,6 +584,7 @@ const AddProduct = () => {
               >
                 Add Option
               </Button>
+
               <List
                 grid={{ gutter: 16, column: 1 }}
                 dataSource={options}
@@ -685,4 +685,4 @@ const AddProduct = () => {
   );
 };
 
-export default AddProduct;
+export default AddHangtag;

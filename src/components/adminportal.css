@@ -9,6 +9,8 @@ body {
   height: 100vh;
   overflow: hidden; /* Prevents extra scrollbars */
 }
+
+/* Logout Button */
 .logout-btn {
   background-color: transparent; /* Red background for logout */
   color: white; /* White text color */
@@ -89,11 +91,37 @@ body {
   color: #fff;
 }
 
-.dropdown {
-  position: relative;
+/* Dropdown Menu */
+.products-dropdown .ant-dropdown-link {
+  color: #bdbdbd;
+  font-size: 16px;
+  padding: 10px;
+  display: block;
+  transition: background-color 0.3s;
 }
 
-/* Dropdown Menu */
+.products-dropdown .ant-dropdown-link:hover {
+  background-color: #33334d;
+  color: #fff;
+}
+
+.ant-dropdown-menu {
+  background-color: #1e1e2f;
+  border-radius: 4px;
+  padding: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.ant-dropdown-menu-item {
+  color: #fff;
+  font-size: 16px;
+  padding: 8px 20px;
+}
+
+.ant-dropdown-menu-item:hover {
+  background-color: #33334d;
+}
+
 .dropdown-menu {
   display: none;
   flex-direction: column;
