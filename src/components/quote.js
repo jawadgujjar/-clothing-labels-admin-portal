@@ -97,26 +97,26 @@ function Quote() {
     },
   ];
 
-    useEffect(() => {
-      // Function to fetch data from API
-      const fetchQuotes = async () => {
-        try {
-          const response = await quote.get("/"); // Adjust the endpoint as per your API
-          console.log(response.data.quotes);
-          setQuoteData(
-            response.data.quotes.map((item, index) => ({
-              ...item,
-              key: index, // Adding a unique key for each row
-            }))
-          );
-        } catch (error) {
-          console.error("Error fetching quotes:", error);
-          message.error("Failed to fetch quotes. Please try again later.");
-        }
-      };
+  useEffect(() => {
+    // Function to fetch data from API
+    const fetchQuotes = async () => {
+      try {
+        const response = await quote.get("/"); // Adjust the endpoint as per your API
+        console.log(response.data.quotes);
+        setQuoteData(
+          response.data.quotes.map((item, index) => ({
+            ...item,
+            key: index, // Adding a unique key for each row
+          }))
+        );
+      } catch (error) {
+        console.error("Error fetching quotes:", error);
+        message.error("Failed to fetch quotes. Please try again later.");
+      }
+    };
 
-      fetchQuotes();
-    }, []);
+    fetchQuotes();
+  }, []);
 
   return (
     <div className="quote-container">
