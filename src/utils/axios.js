@@ -23,11 +23,17 @@ const quote = axios.create({
 const requestquote = axios.create({
   baseURL: `${url}/requestquote`, // Corrected template literal
 });
+const designquote = axios.create({
+  baseURL: `${url}/designQuote`, // Corrected template literal
+});
 const blog = axios.create({
   baseURL: `${url}/blogs`, // Corrected template literal
 });
 const pendingcheckout = axios.create({
   baseURL: `${url}/pendingcheckout`, // Corrected template literal
+});
+const orders = axios.create({
+  baseURL: `${url}/checkout`, // Corrected template literal
 });
 
 // Request interceptor for products
@@ -112,6 +118,24 @@ pendingcheckout.interceptors.request.use(
     return Promise.reject(err);
   }
 );
+designquote.interceptors.request.use(
+  (req) => {
+    // Add any custom headers or logic here if needed
+    return req;
+  },
+  (err) => {
+    return Promise.reject(err);
+  }
+);
+orders.interceptors.request.use(
+  (req) => {
+    // Add any custom headers or logic here if needed
+    return req;
+  },
+  (err) => {
+    return Promise.reject(err);
+  }
+);
 
 export {
   products,
@@ -123,4 +147,6 @@ export {
   users,
   hangtag,
   pendingcheckout,
+  designquote,
+  orders,
 };

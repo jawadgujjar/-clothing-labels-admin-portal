@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Image, message, Button } from "antd";
+import { Table, message, Button } from "antd";
 import "./quote.css";
 import { quote } from "../utils/axios"; // Assuming 'quote' is an axios instance or function
 
@@ -10,7 +10,6 @@ function Quote() {
     if (file && file.originFileObj instanceof File) {
       return URL.createObjectURL(file.originFileObj); // Generate preview URL
     } else {
-      console.warn("Invalid file object:", file);
       return null; // Return null if file object is invalid
     }
   };
@@ -103,6 +102,7 @@ function Quote() {
     const fetchQuotes = async () => {
       try {
         const response = await quote.get("/"); // Adjust the endpoint as per your API
+        console.log(response.data.quotes);
         setQuoteData(
           response.data.quotes.map((item, index) => ({
             ...item,
@@ -129,7 +129,7 @@ function Quote() {
           className="custom-table" // Add a custom class to apply styles
         />
       </div>
-    </div>  
+    </div>
   );
 }
 

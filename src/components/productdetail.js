@@ -325,6 +325,7 @@ const AddProduct = () => {
           <Step title="Product Details" />
           <Step title="Styles" />
           <Step title="Options" />
+          <Step title="Product Description" />{" "}
         </Steps>
 
         <div style={{ marginTop: 24 }}>
@@ -584,7 +585,6 @@ const AddProduct = () => {
               >
                 Add Option
               </Button>
-
               <List
                 grid={{ gutter: 16, column: 1 }}
                 dataSource={options}

@@ -110,8 +110,7 @@ const Requestquote1 = () => {
               key: index,
             }))
           );
-          console.log("dfw", requestquoteData);
-        } else {
+         } else {
           throw new Error("No quotes available.");
         }
       } catch (error) {
@@ -146,7 +145,7 @@ const Requestquote1 = () => {
             dataSource={requestquoteData} // Use the real fetched data
             bordered
             scroll={{ x: "max-content" }}
-            pagination={{ pageSize: 5 }}
+            pagination={{ pageSize: 10 }}
             className="reqquote-table"
           />
         </Col>
