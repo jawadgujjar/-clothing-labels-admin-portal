@@ -38,6 +38,7 @@ const AddHangtag = () => {
   });
   const [styles, setStyles] = useState([]);
   const [options, setOptions] = useState([]);
+  const [descriptions, setDescriptions] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(true);
   const date = new Date();
   const navigate = useNavigate();
@@ -108,6 +109,54 @@ const AddHangtag = () => {
         })
         .catch((error) => {
           console.log(error.message);
+        });
+    }
+  };
+  const handleDescriptionAdd = () => {
+    setDescriptions((prev) => [
+      ...prev,
+      { title: "", description: "", image: null },
+    ]);
+  };
+  const handleDescriptionChange = (index, field, value) => {
+    const updatedDescriptions = [...descriptions];
+    updatedDescriptions[index][field] = value; // Update title or description based on field
+    setDescriptions(updatedDescriptions);
+  };
+
+  const handleDescriptionImageUpload = (e, index) => {
+    const uploadedFile = e.target.files[0]; // Get the uploaded file
+    if (uploadedFile) {
+      const showTime = new Date().toISOString(); // Unique timestamp
+      const imageDocument = ref(
+        Storage,
+        `descriptions/${uuidv4()}-${showTime}-${uploadedFile.name}`
+      );
+
+      const uploadTask = uploadBytesResumable(imageDocument, uploadedFile);
+
+      uploadTask.on("state_changed", (snapshot) => {
+        const percent = Math.round(
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+        );
+        console.log(`Upload is ${percent}% done`); // Optional progress log
+      });
+
+      uploadTask
+        .then(() => {
+          return getDownloadURL(imageDocument); // Get the download URL once upload is complete
+        })
+        .then((url) => {
+          const updatedDescriptions = [...descriptions];
+          updatedDescriptions[index].image = url; // Set image URL
+          setDescriptions(updatedDescriptions); // Update state
+          console.log(
+            updatedDescriptions,
+            "Descriptions updated with image URL"
+          );
+        })
+        .catch((error) => {
+          console.log(error.message, "Error uploading the image");
         });
     }
   };
@@ -285,6 +334,11 @@ const AddHangtag = () => {
           })),
         },
       ],
+      hangtagDescription: descriptions.map((item) => ({
+        title: item.title,
+        image: item.image,
+        descriptions: item.description,
+      })),
     };
 
     try {
@@ -325,6 +379,7 @@ const AddHangtag = () => {
           <Step title="Hangtag Details" />
           <Step title="Styles" />
           <Step title="Options" />
+          <Step title="Description" />
         </Steps>
 
         <div style={{ marginTop: 24 }}>
@@ -667,16 +722,73 @@ const AddHangtag = () => {
               />
             </div>
           )}
+          {/* Step 4: description */}
+          {current === 3 && (
+            <div>
+              <Button type="dashed" onClick={handleDescriptionAdd}>
+                Add Description
+              </Button>
 
+              {descriptions.map((desc, index) => (
+                <div
+                  key={index}
+                  style={{
+                    marginBottom: "20px",
+                    padding: "10px",
+                    border: "1px solid #ddd",
+                  }}
+                >
+                  <Input
+                    placeholder="Add Description Title"
+                    value={desc.title}
+                    onChange={(e) =>
+                      handleDescriptionChange(index, "title", e.target.value)
+                    }
+                    style={{ marginBottom: "10px" }}
+                  />
+                  <Input.TextArea
+                    placeholder="Add Description"
+                    value={desc.description}
+                    onChange={(e) =>
+                      handleDescriptionChange(
+                        index,
+                        "description",
+                        e.target.value
+                      )
+                    }
+                    rows={4}
+                    style={{ marginBottom: "10px" }}
+                  />
+                  <input
+                    type="file"
+                    onChange={(e) => handleDescriptionImageUpload(e, index)}
+                    style={{ marginBottom: "10px" }}
+                  />
+                  {desc.image && (
+                    <img
+                      src={desc.image}
+                      alt="Uploaded"
+                      style={{
+                        width: "100px",
+                        height: "100px",
+                        display: "block",
+                        marginBottom: "10px",
+                      }}
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
           <div style={{ marginTop: 24 }}>
             <Button onClick={handlePrev} style={{ marginRight: 8 }}>
               Previous
             </Button>
             <Button
               type="primary"
-              onClick={current === 2 ? handleSubmit : handleNext}
+              onClick={current === 3 ? handleSubmit : handleNext}
             >
-              {current === 2 ? "Submit" : "Next"}
+              {current === 3 ? "Submit" : "Next"}
             </Button>
           </div>
         </div>

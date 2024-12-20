@@ -753,7 +753,7 @@ const AddProduct = () => {
                     style={{ marginBottom: "10px" }}
                   />
                   <Input.TextArea
-                    placeholder="Add Description"
+                    placeholder="Add Description" 
                     value={desc.description}
                     onChange={(e) =>
                       handleDescriptionChange(
