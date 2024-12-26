@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   Modal,
   Steps,
@@ -10,10 +11,9 @@ import {
   message,
   Space,
 } from "antd";
-import Form from "react-bootstrap/Form";
+import { Form,Alert } from "react-bootstrap";
 import { products } from "../utils/axios"; // Import the interceptor
 import { Storage } from "../firebaseConfig";
-import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid"; // To generate unique IDs for each style
 import {
   uploadBytes,
@@ -23,7 +23,15 @@ import {
 } from "firebase/storage";
 const { Step } = Steps;
 
-const AddProduct = () => {
+const EditProduct = () => {
+  const { id } = useParams(); // Get product ID from URL
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    image: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [current, setCurrent] = useState(0);
   const [percent, setPercent] = useState("");
   const [percentages, setPercentages] = useState([]); // Track upload progress for multiple files
@@ -311,24 +319,53 @@ const AddProduct = () => {
     }
   };
 
-  const handleSubmit = async () => {
+  // Fetch product details
+  useEffect(() => {
+    products
+      .get(`/${id}`) // API endpoint to fetch single product
+      .then((response) => {
+        console.log(response.data)
+        const product = response.data;
+        setProductDetails({
+          name: product._doc.title,
+          descriptionTitle: product._doc.descriptions[0]?.descriptionTitle || "",
+          description: product._doc.descriptions[0]?.text || "",
+          image: product._doc.image,
+          additionalImages: product._doc.descriptions[0]?.images || [],
+        });
+        setStyles(product._doc.descriptions[0]?.styles || []);
+        setOptions(product._doc.descriptions[0]?.options || []);
+        setDescriptions(product.productDescription || []);
+      })
+      .catch((error) => {
+        console.error("Error fetching product:", error);
+        setError("Failed to load product details.");
+      });
+  }, [id]);
+
+  // Handle form submission
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setLoading(true);
+    const token = localStorage.getItem("token");
+
     const productData = {
-      title: productDetails.name,
-      image: url, // Handle uploading the file to get a URL if needed
+      title: formData.title,
+      image: formData.image, // Make sure this is a URL
       descriptions: [
         {
-          descriptionTitle: productDetails.descriptionTitle,
-          text: productDetails.description,
-          images: uploadedImageUrls, // Upload and use URLs for these
-          styles: styles.map((styles) => ({
-            name: styles.name,
-            image: styles.imageUrl,
-            sizes: styles.sizes.map((sizes) => ({
-              name: sizes.name,
-              image: sizes.imageUrl, // Upload and use URL
-              quantityPrice: sizes.prices.map((prices) => ({
-                quantity: prices.quantity,
-                price: prices.price, // Upload and use URL
+          descriptionTitle: formData.descriptionTitle,
+          text: formData.description,
+          images: formData.additionalImages || [], // Ensure uploaded image URLs are included
+          styles: styles.map((style) => ({
+            name: style.name,
+            image: style.imageUrl, // Upload and use URL
+            sizes: style.sizes.map((size) => ({
+              name: size.name,
+              image: size.imageUrl, // Upload and use URL
+              quantityPrice: size.prices.map((price) => ({
+                quantity: price.quantity,
+                price: price.price,
               })),
             })),
           })),
@@ -341,42 +378,46 @@ const AddProduct = () => {
           })),
         },
       ],
-      productDescription : descriptions.map((item) => ({
+      productDescription: descriptions.map((item) => ({
         title: item.title,
         image: item.image,
         descriptions: item.description,
-      }))
+      })),
     };
 
     try {
-      const response = await products.post("/", productData); // Replace '/api/products' with your actual endpoint
+      const response = await products.put(
+        `/${id}`, // Update API endpoint
+        productData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       console.log("API Response:", response.data);
-      message.success("Product saved successfully!");
-      setIsModalOpen(false);
-      setProductDetails({
-        name: "",
-        image: "",
-        descriptionTitle: "",
-        description: "",
-        additionalImages: [],
-      });
-      setStyles([]);
-      setOptions([]);
-      navigate("/"); // Replace "/all-cloth" with the route for AllCloth1
+      message.success("Product updated successfully!");
+      navigate("/"); // Replace with your desired route after update
     } catch (error) {
-      console.error("Error saving product:", error);
-      message.error("Failed to save product. Please try again.");
+      console.error("Error updating product:", error);
+      message.error("Failed to update product. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  return (
-    <div>
-      {/* <Button type="primary" onClick={() => setIsModalOpen(true)}>
-        Open Product Steps
-      </Button> */}
+  // Handle input changes
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
+  return (
+    <div className="container mt-4">
+      <h1>Edit Product</h1>
+      {error && <Alert variant="danger">{error}</Alert>}
       <Modal
-        title="Add Product"
+        title="Edit Product"
         visible={isModalOpen}
         maskClosable={false}
         footer={null}
@@ -493,7 +534,7 @@ const AddProduct = () => {
                         />
                       }
                     >
-                      <Form.Group controlId="formFile" className="mb-3">
+                      <Form.Group controlId="formFile" className="mb-3">  
                         <Form.Label>Style Image</Form.Label>
                         {/* Pass styleIndex to handleSubmitStyleImage */}
                         <input
@@ -645,7 +686,7 @@ const AddProduct = () => {
                 style={{ marginBottom: 16 }}
               >
                 Add Option
-              </Button>
+              </Button> 
               <List
                 grid={{ gutter: 16, column: 1 }}
                 dataSource={options}
@@ -753,8 +794,8 @@ const AddProduct = () => {
                     style={{ marginBottom: "10px" }}
                   />
                   <Input.TextArea
-                    placeholder="Add Description" 
-                    value={desc.description}
+                    placeholder="Add Description"
+                    value={desc.descriptions}
                     onChange={(e) =>
                       handleDescriptionChange(
                         index,
@@ -804,4 +845,4 @@ const AddProduct = () => {
   );
 };
 
-export default AddProduct;
+export default EditProduct;

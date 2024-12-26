@@ -106,7 +106,7 @@ const PendingCheckoutTable = () => {
       key: "action",
       render: (_, record) => (
         <Button
-          type="danger"
+          danger
           onClick={() => handleDelete(record.id)} // Pass the _id to delete the specific record
         >
           Delete
