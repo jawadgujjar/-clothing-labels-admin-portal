@@ -19,6 +19,7 @@ const Users1 = () => {
           },
         });
         setData(response.data.results);
+        console.log(response.data.results, "users");
         localStorage.setItem("totalusers", response.data.results.length);
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -33,14 +34,32 @@ const Users1 = () => {
     setIsModalVisible(true);
   };
 
-  const handleOk = () => {
-    // Update user in the data state after modifying currentUser
-    setData((prevData) =>
-      prevData.map((user) =>
-        user.key === currentUser.key ? currentUser : user
-      )
-    );
-    setIsModalVisible(false);
+  const handleOk = async () => {
+    try {
+      const token = localStorage.getItem("token"); // Get the token from localStorage
+      const data = {
+        email: currentUser.email,
+        phonenumber: currentUser.phonenumber,
+        name: currentUser.name,
+      };
+      await users.patch(`/${currentUser.id}`, data, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Send token as Authorization header
+        },
+      });
+
+      // Update the frontend state
+      setData((prevData) =>
+        prevData.map(
+          (user) => (user.id === currentUser.id ? currentUser : user) // Match by user ID
+        )
+      );
+
+      setIsModalVisible(false);
+      console.log("User updated successfully.");
+    } catch (error) {
+      console.error("Error updating user:", error);
+    }
   };
 
   const handleCancel = () => {
@@ -145,8 +164,8 @@ const Users1 = () => {
               Phone:
               <input
                 type="text"
-                name="phone"
-                value={currentUser.phone}
+                name="phonenumber"
+                value={currentUser.phonenumber}
                 onChange={handleInputChange}
                 className="modal-input"
               />
@@ -157,16 +176,6 @@ const Users1 = () => {
                 type="email"
                 name="email"
                 value={currentUser.email}
-                onChange={handleInputChange}
-                className="modal-input"
-              />
-            </label>
-            <label>
-              Password:
-              <input
-                type="password"
-                name="password"
-                value={currentUser.password}
                 onChange={handleInputChange}
                 className="modal-input"
               />

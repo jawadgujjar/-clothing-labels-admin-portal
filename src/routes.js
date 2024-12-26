@@ -14,6 +14,7 @@ import AdminPortal from "./components/adminportal";
 import AllCloth1 from "./components/allclothing";
 import AddHangtag from "./components/hangtagdetail";
 import AllHangtags1 from "./components/allhangtags";
+import EditProduct from "./components/editproduct";
 
 const { Content } = Layout;
 
@@ -67,7 +68,8 @@ const AppRoutes = () => {
                 <Route path="/dashboard" element={<AdminPortal />} />
                 <Route path="/addproduct" element={<AddProduct />} />
                 <Route path="/addhangtag" element={<AddHangtag />} />
-                </Route>
+                <Route path="/editproduct/:id" element={<EditProduct />} />
+              </Route>
             </Routes>
           </Content>
         </Layout>
