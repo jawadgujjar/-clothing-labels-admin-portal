@@ -20,6 +20,8 @@ import {
   getDownloadURL,
   uploadBytesResumable,
 } from "firebase/storage";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import { blog } from "../../utils/axios";
 import "./blog.css";
 
@@ -160,16 +162,7 @@ function Blog1() {
     }
   };
 
-  const handleEdit = (id) => {
-    // Find the index of the blog with the given ID
-    const index = submittedData.findIndex((blog) => blog.id === id);
-
-    // Check if the blog is found
-    if (index === -1) {
-      console.error("No blog found with id:", id);
-      return;
-    }
-
+  const handleEdit = (index) => {
     const blogToEdit = submittedData[index];
     setTitle(blogToEdit.title);
     setDescription(blogToEdit.description);
@@ -236,7 +229,7 @@ function Blog1() {
             okText="Yes"
             cancelText="No"
           >
-            <Button icon={<DeleteOutlined />} type="danger" size="small">
+            <Button danger icon={<DeleteOutlined />} type="danger" size="small">
               Delete
             </Button>
           </Popconfirm>
@@ -309,11 +302,18 @@ function Blog1() {
               </Form.Item>
 
               <Form.Item label="Add Description">
-                <Input.TextArea
+                {/* <Input.TextArea
                   value={newDescription}
                   onChange={(e) => setNewDescription(e.target.value)}
                   placeholder="Enter description"
                   rows={4}
+                /> */}
+                <ReactQuill
+                  theme="snow"
+                  value={newDescription}
+                  onChange={setNewDescription} // Update state when text changes
+                  placeholder="Enter description"
+                  style={{ minHeight: "150px" }} // Optional styling for height
                 />
               </Form.Item>
 
@@ -353,7 +353,11 @@ function Blog1() {
                       }}
                     >
                       <div>
-                        <strong>{item.heading}</strong>: {item.description}
+                        <strong>{item.heading}</strong>:{" "}
+                        <div
+                          dangerouslySetInnerHTML={{ __html: item.description }}
+                          style={{ marginTop: "5px" }}
+                        />
                       </div>
                       {item.image && (
                         <img
