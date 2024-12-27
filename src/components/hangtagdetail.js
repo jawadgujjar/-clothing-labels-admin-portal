@@ -20,6 +20,7 @@ import {
   getDownloadURL,
   uploadBytesResumable,
 } from "firebase/storage";
+import ReactQuill from "react-quill";
 const { Step } = Steps;
 
 const AddHangtag = () => {
@@ -746,18 +747,18 @@ const AddHangtag = () => {
                     }
                     style={{ marginBottom: "10px" }}
                   />
-                  <Input.TextArea
-                    placeholder="Add Description"
-                    value={desc.description}
-                    onChange={(e) =>
+                  <ReactQuill
+                    theme="snow"
+                    value={desc.description} // Use existing state
+                    onChange={(value) =>
                       handleDescriptionChange(
                         index,
                         "description",
-                        e.target.value
+                        value // Pass the value from ReactQuill
                       )
                     }
-                    rows={4}
-                    style={{ marginBottom: "10px" }}
+                    placeholder="Enter description"
+                    style={{ minHeight: "150px", marginBottom: "10px" }} // Optional styling
                   />
                   <input
                     type="file"
