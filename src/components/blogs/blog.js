@@ -43,39 +43,38 @@ function Blog1() {
 
   const showTime =
     date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-    const handleImageUpload = (e, setImageUrl) => {
-      const uploadedFile = e.target.files[0]; // Get the uploaded file
-      if (uploadedFile) {
-        const imageDocument = ref(
-          Storage,
-          `images/${uploadedFile.name + showTime}`
+  const handleImageUpload = (e, setImageUrl) => {
+    const uploadedFile = e.target.files[0]; // Get the uploaded file
+    if (uploadedFile) {
+      const imageDocument = ref(
+        Storage,
+        `images/${uploadedFile.name + showTime}`
+      );
+      const uploadTask = uploadBytesResumable(imageDocument, uploadedFile);
+
+      uploadTask.on("state_changed", (snapshot) => {
+        const percent = Math.round(
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
         );
-        const uploadTask = uploadBytesResumable(imageDocument, uploadedFile);
-    
-        uploadTask.on("state_changed", (snapshot) => {
-          const percent = Math.round(
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-          );
-          setPercent(percent);
+        setPercent(percent);
+      });
+
+      uploadBytes(imageDocument, uploadedFile)
+        .then(() => {
+          getDownloadURL(imageDocument)
+            .then((Url) => {
+              setImageUrl(Url); // Set the uploaded image URL
+              console.log(Url);
+            })
+            .catch((error) => {
+              console.log(error.message, "error getting the image url");
+            });
+        })
+        .catch((error) => {
+          console.log(error.message);
         });
-    
-        uploadBytes(imageDocument, uploadedFile)
-          .then(() => {
-            getDownloadURL(imageDocument)
-              .then((Url) => {
-                setImageUrl(Url); // Set the uploaded image URL
-                console.log(Url);
-              })
-              .catch((error) => {
-                console.log(error.message, "error getting the image url");
-              });
-          })
-          .catch((error) => {
-            console.log(error.message);
-          });
-      }
-    };
-    
+    }
+  };
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -88,7 +87,7 @@ function Blog1() {
         console.error("Error fetching blogs:", error);
       }
     };
-    
+
     fetchBlogs();
   }, []);
 
@@ -104,7 +103,7 @@ function Blog1() {
     if (newHeading && newDescription) {
       setHeadings([
         ...headings,
-        { heading: newHeading, description: newDescription,image:newImage },
+        { heading: newHeading, description: newDescription, image: newImage },
       ]);
       setNewHeading("");
       setNewDescription("");
@@ -136,12 +135,12 @@ function Blog1() {
       titledescriptions: headings.map((item) => ({
         descriptionTitle: item.heading,
         text: item.description,
-        image: newImage,  // Ensure the image is included
+        image: newImage, // Ensure the image is included
       })),
     };
-  
+
     console.log("Submitting Blog Data:", blogData); // Log data to console
-  
+
     try {
       if (editingIndex !== null) {
         const updatedData = [...submittedData];
@@ -153,19 +152,28 @@ function Blog1() {
         setSubmittedData([response.data, ...submittedData]);
         message.success("Blog post submitted!");
       }
-  
+
       closeModal();
     } catch (error) {
       message.error("Failed to submit blog post!");
       console.error("Error submitting blog:", error);
     }
   };
-  
-  const handleEdit = (index) => {
+
+  const handleEdit = (id) => {
+    // Find the index of the blog with the given ID
+    const index = submittedData.findIndex((blog) => blog.id === id);
+
+    // Check if the blog is found
+    if (index === -1) {
+      console.error("No blog found with id:", id);
+      return;
+    }
+
     const blogToEdit = submittedData[index];
     setTitle(blogToEdit.title);
     setDescription(blogToEdit.description);
-    setHeadings(blogToEdit.headings || []);
+    setHeadings(blogToEdit.titledescriptions || []); // Assuming `titledescriptions` is what you're using for headings
     setUrl(url);
     setEditingIndex(index);
     setCurrentStep(0);
@@ -216,11 +224,12 @@ function Blog1() {
         <Space>
           <Button
             icon={<EditOutlined />}
-            onClick={() => handleEdit(record.id)}
+            onClick={() => handleEdit(record.id)} // Pass the `id` to `handleEdit`
             size="small"
           >
             Edit
           </Button>
+
           <Popconfirm
             title="Are you sure you want to delete this blog?"
             onConfirm={() => handleDelete(record.id)}
@@ -262,98 +271,109 @@ function Blog1() {
         </Steps>
 
         <Form layout="vertical">
-        {currentStep === 0 && (
-  <>
-    <input
-      type="file"
-      onChange={(e) => handleImageUpload(e, setUrl)}
-    />
-    <img src={url} alt="Uploaded" style={{ maxWidth: "100px" }} />
-
-    <Form.Item label="Title">
-      <Input
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        placeholder="Enter title"
-      />
-    </Form.Item>
-
-    <Form.Item label="Description">
-      <Input.TextArea
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        placeholder="Enter description"
-        rows={4}
-      />
-    </Form.Item>
-  </>
-)}
-
-{currentStep === 1 && (
-  <>
-    <Form.Item label="Add Heading">
-      <Input
-        value={newHeading}
-        onChange={(e) => setNewHeading(e.target.value)}
-        placeholder="Enter heading"
-      />
-    </Form.Item>
-
-    <Form.Item label="Add Description">
-      <Input.TextArea
-        value={newDescription}
-        onChange={(e) => setNewDescription(e.target.value)}
-        placeholder="Enter description"
-        rows={4}
-      />
-    </Form.Item>
-
-    <Form.Item label="Upload Image">
-      <input
-        type="file"
-        onChange={(e) => handleImageUpload(e, setNewImage)}
-      />
-      {newImage && (
-        <img
-          src={newImage}
-          alt="Uploaded"
-          style={{ maxWidth: "100px", display: "block", marginBottom: "10px" }}
-        />
-      )}
-    </Form.Item>
-
-    <Button onClick={addHeading} type="dashed">
-      Add Heading, Description, and Image
-    </Button>
-
-    <div style={{ marginTop: "20px" }}>
-      <h3>Added Headings, Descriptions, and Images:</h3>
-      {headings && headings.length > 0 ? (
-        headings.map((item, index) => (
-          <Space
-            key={index}
-            direction="vertical"
-            style={{ marginBottom: "10px", display: "flex", alignItems: "flex-start" }}
-          >
-            <div>
-              <strong>{item.heading}</strong>: {item.description}
-            </div>
-            {item.image && (
-              <img
-                src={item.image}
-                alt="Uploaded"
-                style={{ width: "100px", height: "100px", marginBottom: "10px" }}
+          {currentStep === 0 && (
+            <>
+              <input
+                type="file"
+                onChange={(e) => handleImageUpload(e, setUrl)}
               />
-            )}
-          </Space>
-        ))
-      ) : (
-        <p>No headings, descriptions, or images added yet.</p>
-      )}
-    </div>
-  </>
-)}
+              <img src={url} alt="Uploaded" style={{ maxWidth: "100px" }} />
 
+              <Form.Item label="Title">
+                <Input
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Enter title"
+                />
+              </Form.Item>
+
+              <Form.Item label="Description">
+                <Input.TextArea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Enter description"
+                  rows={4}
+                />
+              </Form.Item>
+            </>
+          )}
+
+          {currentStep === 1 && (
+            <>
+              <Form.Item label="Add Heading">
+                <Input
+                  value={newHeading}
+                  onChange={(e) => setNewHeading(e.target.value)}
+                  placeholder="Enter heading"
+                />
+              </Form.Item>
+
+              <Form.Item label="Add Description">
+                <Input.TextArea
+                  value={newDescription}
+                  onChange={(e) => setNewDescription(e.target.value)}
+                  placeholder="Enter description"
+                  rows={4}
+                />
+              </Form.Item>
+
+              <Form.Item label="Upload Image">
+                <input
+                  type="file"
+                  onChange={(e) => handleImageUpload(e, setNewImage)}
+                />
+                {newImage && (
+                  <img
+                    src={newImage}
+                    alt="Uploaded"
+                    style={{
+                      maxWidth: "100px",
+                      display: "block",
+                      marginBottom: "10px",
+                    }}
+                  />
+                )}
+              </Form.Item>
+
+              <Button onClick={addHeading} type="dashed">
+                Add Heading, Description, and Image
+              </Button>
+
+              <div style={{ marginTop: "20px" }}>
+                <h3>Added Headings, Descriptions, and Images:</h3>
+                {headings && headings.length > 0 ? (
+                  headings.map((item, index) => (
+                    <Space
+                      key={index}
+                      direction="vertical"
+                      style={{
+                        marginBottom: "10px",
+                        display: "flex",
+                        alignItems: "flex-start",
+                      }}
+                    >
+                      <div>
+                        <strong>{item.heading}</strong>: {item.description}
+                      </div>
+                      {item.image && (
+                        <img
+                          src={item.image}
+                          alt="Uploaded"
+                          style={{
+                            width: "100px",
+                            height: "100px",
+                            marginBottom: "10px",
+                          }}
+                        />
+                      )}
+                    </Space>
+                  ))
+                ) : (
+                  <p>No headings, descriptions, or images added yet.</p>
+                )}
+              </div>
+            </>
+          )}
         </Form>
 
         <div className="modal-actions">
