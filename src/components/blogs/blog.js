@@ -26,6 +26,32 @@ import { blog } from "../../utils/axios";
 import "./blog.css";
 
 const { Step } = Steps;
+const modules = {
+  toolbar: [
+    [{ header: [1, 2, 3, false] }], // Header sizes
+    [{ align: [] }], // Text alignment options (left, center, right, justify)
+    ["bold", "italic", "underline", "strike"], // Formatting buttons
+    [{ list: "ordered" }, { list: "bullet" }], // Lists
+    ["blockquote", "code-block"], // Blockquote and code
+    ["link", "image"], // Links and images
+    ["clean"], // Clear formatting
+  ],
+};
+
+const formats = [
+  "header",
+  "align",
+  "bold",
+  "italic",
+  "underline",
+  "strike",
+  "list",
+  "bullet",
+  "blockquote",
+  "code-block",
+  "link",
+  "image",
+];
 
 function Blog1() {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -133,7 +159,7 @@ function Blog1() {
   };
 
   const handleSubmit = async () => {
-    console.log(headings,"dhwuh")
+    console.log(headings, "dhwuh");
     const blogData = {
       title: title,
       description: description,
@@ -170,7 +196,7 @@ function Blog1() {
     const blogToEdit = submittedData[index];
     setTitle(blogToEdit.title);
     setDescription(blogToEdit.description);
-    setHeadings(blogToEdit.headings || []);
+    setHeadings(blogToEdit.titledescriptions || []); // Assuming `titledescriptions` is what you're using for headings
     setUrl(url);
     setEditingIndex(index);
     setCurrentStep(0);
@@ -221,11 +247,12 @@ function Blog1() {
         <Space>
           <Button
             icon={<EditOutlined />}
-            onClick={() => handleEdit(record.id)}
+            onClick={() => handleEdit(record.id)} // Pass the `id` to `handleEdit`
             size="small"
           >
             Edit
           </Button>
+
           <Popconfirm
             title="Are you sure you want to delete this blog?"
             onConfirm={() => handleDelete(record.id)}
@@ -314,9 +341,11 @@ function Blog1() {
                 <ReactQuill
                   theme="snow"
                   value={newDescription}
-                  onChange={setNewDescription} // Update state when text changes
+                  onChange={setNewDescription}
                   placeholder="Enter description"
-                  style={{ minHeight: "150px" }} // Optional styling for height
+                  modules={modules} // Add custom toolbar
+                  formats={formats} // Supported formats
+                  style={{ minHeight: "200px" }}
                 />
               </Form.Item>
 
