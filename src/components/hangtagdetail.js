@@ -20,7 +20,34 @@ import {
   getDownloadURL,
   uploadBytesResumable,
 } from "firebase/storage";
+import ReactQuill from "react-quill";
 const { Step } = Steps;
+const modules = {
+  toolbar: [
+    [{ header: [1, 2, 3, false] }], // Header sizes
+    [{ align: [] }], // Text alignment options (left, center, right, justify)
+    ["bold", "italic", "underline", "strike"], // Formatting buttons
+    [{ list: "ordered" }, { list: "bullet" }], // Lists
+    ["blockquote", "code-block"], // Blockquote and code
+    ["link", "image"], // Links and images
+    ["clean"], // Clear formatting
+  ],
+};
+
+const formats = [
+  "header",
+  "align",
+  "bold",
+  "italic",
+  "underline",
+  "strike",
+  "list",
+  "bullet",
+  "blockquote",
+  "code-block",
+  "link",
+  "image",
+];
 
 const AddHangtag = () => {
   const [current, setCurrent] = useState(0);
@@ -746,19 +773,17 @@ const AddHangtag = () => {
                     }
                     style={{ marginBottom: "10px" }}
                   />
-                  <Input.TextArea
-                    placeholder="Add Description"
-                    value={desc.description}
-                    onChange={(e) =>
-                      handleDescriptionChange(
-                        index,
-                        "description",
-                        e.target.value
-                      )
-                    }
-                    rows={4}
-                    style={{ marginBottom: "10px" }}
-                  />
+                   <ReactQuill
+                                      theme="snow"
+                                      value={desc.description}
+                                      onChange={(value) =>
+                                        handleDescriptionChange(index, "description", value)
+                                      }
+                                      placeholder="Enter description"
+                                      modules={modules}
+                                      formats={formats}
+                                      style={{ minHeight: "200px", marginBottom: "10px" }}
+                                    />
                   <input
                     type="file"
                     onChange={(e) => handleDescriptionImageUpload(e, index)}

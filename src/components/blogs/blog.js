@@ -26,6 +26,32 @@ import { blog } from "../../utils/axios";
 import "./blog.css";
 
 const { Step } = Steps;
+const modules = {
+  toolbar: [
+    [{ header: [1, 2, 3, false] }], // Header sizes
+    [{ align: [] }], // Text alignment options (left, center, right, justify)
+    ["bold", "italic", "underline", "strike"], // Formatting buttons
+    [{ list: "ordered" }, { list: "bullet" }], // Lists
+    ["blockquote", "code-block"], // Blockquote and code
+    ["link", "image"], // Links and images
+    ["clean"], // Clear formatting
+  ],
+};
+
+const formats = [
+  "header",
+  "align",
+  "bold",
+  "italic",
+  "underline",
+  "strike",
+  "list",
+  "bullet",
+  "blockquote",
+  "code-block",
+  "link",
+  "image",
+];
 
 function Blog1() {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -48,10 +74,8 @@ function Blog1() {
   const handleImageUpload = (e, setImageUrl) => {
     const uploadedFile = e.target.files[0]; // Get the uploaded file
     if (uploadedFile) {
-      const imageDocument = ref(
-        Storage,
-        `images/${uploadedFile.name + showTime}`
-      );
+      const uniqueFileName = `${uploadedFile.name}_${Date.now()}`; // Use a unique name
+      const imageDocument = ref(Storage, `images/${uniqueFileName}`);
       const uploadTask = uploadBytesResumable(imageDocument, uploadedFile);
 
       uploadTask.on("state_changed", (snapshot) => {
@@ -61,15 +85,15 @@ function Blog1() {
         setPercent(percent);
       });
 
-      uploadBytes(imageDocument, uploadedFile)
+      uploadTask
         .then(() => {
           getDownloadURL(imageDocument)
             .then((Url) => {
-              setImageUrl(Url); // Set the uploaded image URL
-              console.log(Url);
+              setImageUrl(Url); // Update the image URL state
+              console.log("Image URL:", Url);
             })
             .catch((error) => {
-              console.log(error.message, "error getting the image url");
+              console.log(error.message, "Error getting the image URL");
             });
         })
         .catch((error) => {
@@ -102,15 +126,20 @@ function Blog1() {
   };
 
   const addHeading = () => {
-    if (newHeading && newDescription) {
+    if (newHeading && newDescription && newImage) {
       setHeadings([
         ...headings,
-        { heading: newHeading, description: newDescription, image: newImage },
+        {
+          heading: newHeading,
+          description: newDescription,
+          image: newImage, // Add unique image URL here
+        },
       ]);
       setNewHeading("");
       setNewDescription("");
+      setNewImage(""); // Reset the newImage state for the next upload
     } else {
-      message.error("Please provide both a heading and a description.");
+      message.error("Please provide heading, description, and image.");
     }
   };
 
@@ -130,6 +159,7 @@ function Blog1() {
   };
 
   const handleSubmit = async () => {
+    console.log(headings, "dhwuh");
     const blogData = {
       title: title,
       description: description,
@@ -137,7 +167,7 @@ function Blog1() {
       titledescriptions: headings.map((item) => ({
         descriptionTitle: item.heading,
         text: item.description,
-        image: newImage, // Ensure the image is included
+        image: item.image, // Ensure the image is included
       })),
     };
 
@@ -311,9 +341,11 @@ function Blog1() {
                 <ReactQuill
                   theme="snow"
                   value={newDescription}
-                  onChange={setNewDescription} // Update state when text changes
+                  onChange={setNewDescription}
                   placeholder="Enter description"
-                  style={{ minHeight: "150px" }} // Optional styling for height
+                  modules={modules} // Add custom toolbar
+                  formats={formats} // Supported formats
+                  style={{ minHeight: "200px" }}
                 />
               </Form.Item>
 
