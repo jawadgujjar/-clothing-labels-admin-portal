@@ -133,7 +133,7 @@ function Blog1() {
   };
 
   const handleSubmit = async () => {
-    console.log(headings,"dhwuh")
+    console.log(headings, "dhwuh");
     const blogData = {
       title: title,
       description: description,
@@ -166,15 +166,20 @@ function Blog1() {
     }
   };
 
-  const handleEdit = (index) => {
-    const blogToEdit = submittedData[index];
-    setTitle(blogToEdit.title);
-    setDescription(blogToEdit.description);
-    setHeadings(blogToEdit.headings || []);
-    setUrl(url);
-    setEditingIndex(index);
-    setCurrentStep(0);
-    setIsModalVisible(true);
+  const handleEdit = (id) => {
+    const blogToEdit = submittedData.find((blog) => blog.id === id); // Find the blog with matching ID
+    if (blogToEdit) {
+      console.log("data", blogToEdit);
+      setTitle(blogToEdit.title);
+      setDescription(blogToEdit.description);
+      setHeadings(blogToEdit.headings || []);
+      setUrl(blogToEdit.image); // Assuming 'url' is the blog's main image
+      setEditingIndex(id); // Save the ID for updating later
+      setCurrentStep(0);
+      setIsModalVisible(true);
+    } else {
+      console.error("Blog with the given ID not found!");
+    }
   };
 
   const handleDelete = async (id) => {
