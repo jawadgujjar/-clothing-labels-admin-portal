@@ -23,6 +23,32 @@ import {
 } from "firebase/storage";
 import ReactQuill from "react-quill";
 const { Step } = Steps;
+const modules = {
+  toolbar: [
+    [{ header: [1, 2, 3, false] }], // Header sizes
+    [{ align: [] }], // Text alignment options (left, center, right, justify)
+    ["bold", "italic", "underline", "strike"], // Formatting buttons
+    [{ list: "ordered" }, { list: "bullet" }], // Lists
+    ["blockquote", "code-block"], // Blockquote and code
+    ["link", "image"], // Links and images
+    ["clean"], // Clear formatting
+  ],
+};
+
+const formats = [
+  "header",
+  "align",
+  "bold",
+  "italic",
+  "underline",
+  "strike",
+  "list",
+  "bullet",
+  "blockquote",
+  "code-block",
+  "link",
+  "image",
+];
 
 const AddProduct = () => {
   const [current, setCurrent] = useState(0);
@@ -42,10 +68,6 @@ const AddProduct = () => {
   const [options, setOptions] = useState([]);
   const [descriptions, setDescriptions] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(true);
-  // const [newHeading, setNewHeading] = useState("");
-  // const [newDescription, setNewDescription] = useState("");
-  // const [headings, setHeadings] = useState([]);
-  // const [newImage, setNewImage] = useState("");
 
   const date = new Date();
   const navigate = useNavigate();
@@ -743,8 +765,10 @@ const AddProduct = () => {
                     marginBottom: "20px",
                     padding: "10px",
                     border: "1px solid #ddd",
+                    borderRadius: "4px", // Add rounded corners
                   }}
                 >
+                  {/* Title Input */}
                   <Input
                     placeholder="Add Description Title"
                     value={desc.title}
@@ -753,24 +777,28 @@ const AddProduct = () => {
                     }
                     style={{ marginBottom: "10px" }}
                   />
+
+                  {/* React Quill Editor */}
                   <ReactQuill
                     theme="snow"
-                    value={desc.description} // Use existing state
+                    value={desc.description}
                     onChange={(value) =>
-                      handleDescriptionChange(
-                        index,
-                        "description",
-                        value // Pass the value from ReactQuill
-                      )
+                      handleDescriptionChange(index, "description", value)
                     }
                     placeholder="Enter description"
-                    style={{ minHeight: "150px", marginBottom: "10px" }} // Optional styling
+                    modules={modules}
+                    formats={formats}
+                    style={{ minHeight: "200px", marginBottom: "10px" }}
                   />
+
+                  {/* File Upload Input */}
                   <input
                     type="file"
                     onChange={(e) => handleDescriptionImageUpload(e, index)}
                     style={{ marginBottom: "10px" }}
                   />
+
+                  {/* Uploaded Image Preview */}
                   {desc.image && (
                     <img
                       src={desc.image}
@@ -778,8 +806,10 @@ const AddProduct = () => {
                       style={{
                         width: "100px",
                         height: "100px",
+                        objectFit: "cover",
                         display: "block",
                         marginBottom: "10px",
+                        borderRadius: "4px", // Rounded corners for the image
                       }}
                     />
                   )}
