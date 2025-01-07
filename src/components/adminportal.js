@@ -13,6 +13,7 @@ import { LogoutOutlined, DownOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import Designquote from "./designquote";
 import PendingCheckoutTable from "./pendingcheckout";
+import Subscribeemail from "./subscribeemails/subscribeemail";
 
 const AdminPortal = () => {
   const [activeContent, setActiveContent] = useState("Welcome");
@@ -43,8 +44,8 @@ const AdminPortal = () => {
         return <Order />;
       case "Get a Quote":
         return <Quote />;
-        case "Design Quote":
-          return <Designquote />;
+      case "Design Quote":
+        return <Designquote />;
       case "Blog Management":
         return <Blog1 />;
       case "All Clothing":
@@ -52,9 +53,11 @@ const AdminPortal = () => {
       case "All Hang Tags":
         return <AllHangtags1 />;
       case "Pending Checkouts":
-        return <PendingCheckoutTable />;  
+        return <PendingCheckoutTable />;
       case "Request a Quote":
         return <Requestquote1 />;
+      case "Subscribed Emails":
+        return <Subscribeemail />; // Add case for Subscribed Emails
       default:
         return (
           <div>
@@ -91,6 +94,7 @@ const AdminPortal = () => {
           <a onClick={() => setActiveContent("Pending Checkouts")}>
             Pending Checkouts
           </a>
+          <a onClick={() => setActiveContent("Subscribed Emails")}>Subscribed Emails</a> {/* Add this line */}
           <Dropdown
             overlay={menu}
             trigger={["click"]}

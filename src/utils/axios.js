@@ -35,7 +35,9 @@ const pendingcheckout = axios.create({
 const orders = axios.create({
   baseURL: `${url}/checkout`, // Corrected template literal
 });
-
+const newsletteremail = axios.create({
+  baseURL: `${url}/newsletter`, // Corrected template literal
+});
 // Request interceptor for products
 products.interceptors.request.use(
   (req) => {
@@ -136,6 +138,15 @@ orders.interceptors.request.use(
     return Promise.reject(err);
   }
 );
+newsletteremail.interceptors.request.use(
+  (req) => {
+    // Add any custom headers or logic here if needed
+    return req;
+  },
+  (err) => {
+    return Promise.reject(err);
+  }
+);
 
 export {
   products,
@@ -149,4 +160,5 @@ export {
   pendingcheckout,
   designquote,
   orders,
+  newsletteremail,
 };
