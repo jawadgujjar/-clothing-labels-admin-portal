@@ -15,6 +15,7 @@ import AllCloth1 from "./components/allclothing";
 import AddHangtag from "./components/hangtagdetail";
 import AllHangtags1 from "./components/allhangtags";
 import EditProduct from "./components/editproduct";
+import Completedorder from "./components/completedorder";
 
 const { Content } = Layout;
 
@@ -68,6 +69,7 @@ const AppRoutes = () => {
                 <Route path="/dashboard" element={<AdminPortal />} />
                 <Route path="/addproduct" element={<AddProduct />} />
                 <Route path="/addhangtag" element={<AddHangtag />} />
+                <Route path="/completedorder" element={<Completedorder />} />
                 <Route path="/editproduct/:id" element={<EditProduct />} />
               </Route>
             </Routes>

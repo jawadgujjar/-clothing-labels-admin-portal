@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Table, Row, Col, Card, Button, Divider, message } from "antd";
-import { completedorders, orders } from "../../utils/axios";
-import "./order.css";
-import { CheckCircleOutlined } from "@ant-design/icons";
+import { completedorders } from "../utils/axios";
+import "../components/orderdetail/order.css";
 
-const Order = () => {
+const Completedorder = () => {
   // State for clients data
   const [clients, setClients] = useState([]);
   const [expandedRowKeys, setExpandedRowKeys] = useState([]);
@@ -13,12 +12,11 @@ const Order = () => {
     // Function to fetch data from API
     const fetchQuotes = async () => {
       try {
-        const response = await orders.get("/"); // Adjust the endpoint as per your API
-        // Mapping response data
+        const response = await completedorders.get("/"); // Adjust the endpoint as per your API
         setClients(
           response.data.data.map((item, index) => ({
             key: index, // Unique key for each row
-            id: item._id,
+
             // User Details
             userId: item.user?.id || "N/A",
             name: item.user?.name || "N/A",
@@ -85,76 +83,6 @@ const Order = () => {
     setExpandedRowKeys(expanded ? [record.key] : []);
   };
 
-  const handleCompletedOrder = async (id) => {
-    try {
-      // Find the specific client/order by ID from the state (clients)
-      const orderData = clients.find((client) => client.id === id);
-      console.log(orderData, "order");
-      if (!orderData) {
-        message.error("Order not found!");
-        return;
-      }
-      const completedOrderData = {
-        itemName: orderData.checkoutProducts[0].productName, // Assuming item name is from the first checkout product
-        itemId: id, // Using _id from the first product, assuming it matches the item ID
-        price: Number(orderData.checkoutProducts[0].totalPrice), // Converting totalPrice to a number
-        user: {
-          id: orderData.userId, // Using userId instead of user.id based on the provided data
-          name: orderData.name, // Directly from orderData
-          email: orderData.email, // Directly from orderData
-          phoneNumber: orderData.phoneNumber, // Directly from orderData
-        },
-        billingAddress: {
-          firstName: orderData.billingFirstName, // Using the direct properties from the orderData
-          middleName: orderData.billingMiddleName,
-          lastName: orderData.billingLastName,
-          companyName: orderData.billingCompanyName,
-          phoneNumber: orderData.billingPhoneNumber,
-          streetAddress: orderData.billingStreetAddress,
-          city: orderData.billingCity,
-          stateOrProvince: orderData.billingState,
-          zipOrPostalCode: orderData.billingZip,
-          country: orderData.billingCountry,
-        },
-        shippingAddress: {
-          firstName: orderData.shippingFirstName, // Using the direct properties from the orderData
-          middleName: orderData.shippingMiddleName,
-          lastName: orderData.shippingLastName,
-          companyName: orderData.shippingCompanyName,
-          phoneNumber: orderData.shippingPhoneNumber,
-          streetAddress: orderData.shippingStreetAddress,
-          city: orderData.shippingCity,
-          stateOrProvince: orderData.shippingState,
-          zipOrPostalCode: orderData.shippingZip,
-          country: orderData.shippingCountry,
-        },
-        checkoutProducts: orderData.checkoutProducts.map((product) => ({
-          productName: product.productName,
-          artworkFile: product.artworkFile,
-          size: product.size,
-          style: product.style,
-          quantity: product.quantity,
-          totalPrice: product.totalPrice,
-          options: product.options,
-          comments: product.comments,
-          qty: "1",
-        })),
-        payment: {
-          status: orderData.status, // Using paymentStatus directly
-        },
-      };
-      const response = await completedorders.post("/", completedOrderData);
-      console.log(response.data);
-      if (response.status === 201) {
-        message.success("Order marked as completed!");
-      } else {
-        message.error("Failed to mark order as completed.");
-      }
-    } catch (error) {
-      console.error("Error in handleCompletedOrder:", error);
-      message.error("Error completing the order. Please try again.");
-    }
-  };
   // Define Table Columns for Client Basic Info
   const columns = [
     {
@@ -169,6 +97,12 @@ const Order = () => {
       key: "name",
       width: 150,
     },
+    // {
+    //   title: 'Last Name',
+    //   dataIndex: 'lastName',
+    //   key: 'lastName',
+    //   width: 150,
+    // },
     {
       title: "Phone Number",
       dataIndex: "phoneNumber",
@@ -179,29 +113,20 @@ const Order = () => {
       title: "Actions",
       key: "actions",
       render: (_, record) => (
-        <>
-          <Button
-            type="primary"
-            onClick={() => {
-              if (expandedRowKeys.includes(record.key)) {
-                setExpandedRowKeys([]); // Collapse row
-              } else {
-                setExpandedRowKeys([record.key]); // Expand row
-              }
-            }}
-          >
-            {expandedRowKeys.includes(record.key)
-              ? "Hide Order Details"
-              : "Show Order Details"}
-          </Button>
-          <Button style={{ marginLeft: "1rem" }}>
-            <CheckCircleOutlined
-              onClick={() => {
-                handleCompletedOrder(record.id); // Call your function with the id
-              }}
-            />
-          </Button>
-        </>
+        <Button
+          type="primary"
+          onClick={() => {
+            if (expandedRowKeys.includes(record.key)) {
+              setExpandedRowKeys([]);
+            } else {
+              setExpandedRowKeys([record.key]);
+            }
+          }}
+        >
+          {expandedRowKeys.includes(record.key)
+            ? "Hide Order Details"
+            : "Show Order Details"}
+        </Button>
       ),
       width: 180,
     },
@@ -387,4 +312,4 @@ const Order = () => {
   );
 };
 
-export default Order;
+export default Completedorder;

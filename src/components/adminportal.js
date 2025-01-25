@@ -13,6 +13,7 @@ import { LogoutOutlined, DownOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import Designquote from "./designquote";
 import PendingCheckoutTable from "./pendingcheckout";
+import Completedorder from "./completedorder";
 
 const AdminPortal = () => {
   const [activeContent, setActiveContent] = useState("Welcome");
@@ -41,10 +42,12 @@ const AdminPortal = () => {
         return <Users1 />;
       case "Orders":
         return <Order />;
+      case "completedorders":
+        return <Completedorder />;
       case "Get a Quote":
         return <Quote />;
-        case "Design Quote":
-          return <Designquote />;
+      case "Design Quote":
+        return <Designquote />;
       case "Blog Management":
         return <Blog1 />;
       case "All Clothing":
@@ -52,7 +55,7 @@ const AdminPortal = () => {
       case "All Hang Tags":
         return <AllHangtags1 />;
       case "Pending Checkouts":
-        return <PendingCheckoutTable />;  
+        return <PendingCheckoutTable />;
       case "Request a Quote":
         return <Requestquote1 />;
       default:
@@ -83,6 +86,9 @@ const AdminPortal = () => {
           <a onClick={() => setActiveContent("Dashboard")}>Dashboard</a>
           <a onClick={() => setActiveContent("Users")}>Users</a>
           <a onClick={() => setActiveContent("Orders")}>Orders</a>
+          <a onClick={() => setActiveContent("completedorders")}>
+            Completed Orders
+          </a>
           <a onClick={() => setActiveContent("Get a Quote")}>Get a Quote</a>
           <a onClick={() => setActiveContent("Design Quote")}>Design Quote</a>
           <a onClick={() => setActiveContent("Blog Management")}>

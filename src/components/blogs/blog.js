@@ -66,6 +66,7 @@ function Blog1() {
   const [newDescription, setNewDescription] = useState("");
   const [submittedData, setSubmittedData] = useState([]);
   const [editingIndex, setEditingIndex] = useState(null);
+  const [selectedHeadingIndex, setSelectedHeadingIndex] = useState(null);
   const date = new Date();
   const [newImage, setNewImage] = useState("");
 
@@ -194,13 +195,34 @@ function Blog1() {
 
   const handleEdit = (id) => {
     const blogToEdit = submittedData.find((blog) => blog.id === id); // Find the blog with matching ID
+
     if (blogToEdit) {
-      console.log("data", blogToEdit);
-      setTitle(blogToEdit.title);
-      setDescription(blogToEdit.description);
-      setHeadings(blogToEdit.headings || []);
-      setUrl(blogToEdit.image); // Assuming 'url' is the blog's main image
-      setEditingIndex(id); // Save the ID for updating later
+      console.log("Editing blog data:", blogToEdit);
+      setTitle(blogToEdit.title || ""); // Blog title
+      setDescription(blogToEdit.description || ""); // Blog description
+      setUrl(blogToEdit.image)
+      // Map titledescriptions to headings
+      const mappedHeadings = (blogToEdit.titledescriptions || []).map(
+        (item) => ({
+          heading: item.descriptionTitle || "", // Set heading title
+          description: item.text || "", // Set description (HTML format)
+          image: item.image || null, // Set image for heading
+        })
+      );
+
+      // Save editing index (or ID for reference)
+      setEditingIndex(id);
+
+      // Populate states
+      setHeadings(mappedHeadings); // Populate headings state
+      if (mappedHeadings.length > 0) {
+        // Set the first heading for autofill in the form
+        setNewHeading(mappedHeadings[0].heading);
+        setNewDescription(mappedHeadings[0].description);
+        setNewImage(mappedHeadings[0].image);
+      }
+
+      // Reset step and open modal
       setCurrentStep(0);
       setIsModalVisible(true);
     } else {
@@ -337,19 +359,13 @@ function Blog1() {
               </Form.Item>
 
               <Form.Item label="Add Description">
-                {/* <Input.TextArea
-                  value={newDescription}
-                  onChange={(e) => setNewDescription(e.target.value)}
-                  placeholder="Enter description"
-                  rows={4}
-                /> */}
                 <ReactQuill
                   theme="snow"
                   value={newDescription}
                   onChange={setNewDescription}
                   placeholder="Enter description"
-                  modules={modules} // Add custom toolbar
-                  formats={formats} // Supported formats
+                  modules={modules}
+                  formats={formats}
                   style={{ minHeight: "200px" }}
                 />
               </Form.Item>
@@ -372,47 +388,34 @@ function Blog1() {
                 )}
               </Form.Item>
 
-              <Button onClick={addHeading} type="dashed">
-                Add Heading, Description, and Image
-              </Button>
+              <Button
+                onClick={() => {
+                  if (selectedHeadingIndex !== null) {
+                    // Update existing heading
+                    const updatedHeadings = [...headings];
+                    updatedHeadings[selectedHeadingIndex] = {
+                      heading: newHeading,
+                      description: newDescription,
+                      image: newImage,
+                    };
+                    setHeadings(updatedHeadings);
+                  } else {
+                    // Add new heading
+                    addHeading();
+                  }
 
-              <div style={{ marginTop: "20px" }}>
-                <h3>Added Headings, Descriptions, and Images:</h3>
-                {headings && headings.length > 0 ? (
-                  headings.map((item, index) => (
-                    <Space
-                      key={index}
-                      direction="vertical"
-                      style={{
-                        marginBottom: "10px",
-                        display: "flex",
-                        alignItems: "flex-start",
-                      }}
-                    >
-                      <div>
-                        <strong>{item.heading}</strong>:{" "}
-                        <div
-                          dangerouslySetInnerHTML={{ __html: item.description }}
-                          style={{ marginTop: "5px" }}
-                        />
-                      </div>
-                      {item.image && (
-                        <img
-                          src={item.image}
-                          alt="Uploaded"
-                          style={{
-                            width: "100px",
-                            height: "100px",
-                            marginBottom: "10px",
-                          }}
-                        />
-                      )}
-                    </Space>
-                  ))
-                ) : (
-                  <p>No headings, descriptions, or images added yet.</p>
-                )}
-              </div>
+                  // Reset input fields
+                  setNewHeading("");
+                  setNewDescription("");
+                  setNewImage("");
+                  setSelectedHeadingIndex(null);
+                }}
+                type="dashed"
+              >
+                {selectedHeadingIndex !== null
+                  ? "Update Heading"
+                  : "Add Heading, Description, and Image"}
+              </Button>
             </>
           )}
         </Form>
