@@ -38,7 +38,9 @@ const orders = axios.create({
 const completedorders = axios.create({
   baseURL: `${url}/completedorder`, // Corrected template literal
 });
-
+const seo = axios.create({
+  baseURL: `${url}/seo`, // Corrected template literal
+});
 // Request interceptor for products
 products.interceptors.request.use(
   (req) => {
@@ -148,6 +150,15 @@ completedorders.interceptors.request.use(
     return Promise.reject(err);
   }
 );
+seo.interceptors.request.use(
+  (req) => {
+    // Add any custom headers or logic here if needed
+    return req;
+  },
+  (err) => {
+    return Promise.reject(err);
+  }
+);
 
 export {
   products,
@@ -161,5 +172,6 @@ export {
   pendingcheckout,
   designquote,
   orders,
-  completedorders
+  completedorders,
+  seo,
 };

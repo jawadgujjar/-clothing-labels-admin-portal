@@ -1,12 +1,28 @@
 import React, { useEffect, useState } from "react";
-import { hangtag } from "../utils/axios"; // Adjust path accordingly
-import { Table, Button, message } from "antd";
-import "./allclothing.css";
+import { hangtag, seo } from "../utils/axios"; // Adjust path accordingly
+import { Table, Button, message, Modal, Form, Input } from "antd";
 import { Link } from "react-router-dom";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons"; // Import icons
 
 const AllHangtags1 = () => {
   const [hangtags, setHangtags] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState(null); // State to store the ID
+  const [form] = Form.useForm(); // Use form hook
+
+  const showModal = (id) => {
+    setIsModalOpen(true);
+    console.log(id);
+    setSelectedId(id);
+  };
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
 
   // Fetch hangtags on mount
   useEffect(() => {
@@ -21,24 +37,61 @@ const AllHangtags1 = () => {
   }, []);
 
   // Handle delete action
-  const handleDelete = (productId) => {
+  const handleDelete = (hangtagId) => {
     const token = localStorage.getItem("token");
     hangtag
-      .delete(`/${productId}`, {
+      .delete(`/${hangtagId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       }) // Assuming the API has a delete endpoint like '/hangtags/:id'
       .then(() => {
         message.success("Hangtag deleted successfully!");
-        setHangtags((prevProducts) =>
-          prevProducts.filter((item) => item._id !== productId)
+        setHangtags((prevHangtags) =>
+          prevHangtags.filter((item) => item._id !== hangtagId)
         ); // Remove hangtags from state
       })
       .catch((error) => {
         message.error("Failed to delete the hangtag");
         console.error("Error deleting hangtag:", error);
       });
+  };
+
+  const onFinish = (values) => {
+    setIsModalOpen(false);
+    const token = localStorage.getItem("token");
+
+    // Convert metaKeywords string to an array
+    const keywordsArray = values.metaKeywords
+      .split(",")
+      .map((keyword) => keyword.trim());
+console.log(selectedId)
+    const data1 = {
+      productId: selectedId,
+      title: values.metaTitle,
+      description: values.metaDescription,
+      keywords: keywordsArray, // Send the keywords as an array
+      script: values.script,
+    };
+
+    seo
+      .post("/", data1, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then(() => {
+        message.success("SEO data added successfully!");
+        form.resetFields(); // Reset the form fields after successful submission
+        setIsModalOpen(false); // Close the modal after successful submission
+      })
+      .catch((error) => {
+        message.error("Failed to add SEO data");
+        console.error("Error adding SEO data:", error);
+      });
+  };
+  const onFinishFailed = (errorInfo) => {
+    console.log("Failed:", errorInfo);
   };
 
   // Define columns for the Table component
@@ -69,7 +122,7 @@ const AllHangtags1 = () => {
       key: "actions",
       render: (text, record) => (
         <div>
-          <Link to={`/editproduct/${record._id}`}>
+          <Link to={`/edithangtag/${record._id}`}>
             <Button icon={<EditOutlined />} style={{ marginRight: 8 }} />
           </Link>
           <Button
@@ -77,6 +130,10 @@ const AllHangtags1 = () => {
             type="danger"
             onClick={() => handleDelete(record._id)}
           />
+          <Button type="primary" onClick={() => showModal(record.id)}>
+            {" "}
+            Add SEO
+          </Button>
         </div>
       ),
     },
@@ -98,6 +155,91 @@ const AllHangtags1 = () => {
         bordered // Add border to the table
         title={() => "Hangtag List"} // Optional title for the table
       />
+      <Modal
+        title="Add SEO Data"
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        footer={null}
+      >
+        <Form
+          name="seoForm"
+          labelCol={{
+            span: 6, // Adjust label width as per your need
+          }}
+          wrapperCol={{
+            span: 18, // Adjust input width as per your need
+          }}
+          style={{
+            maxWidth: 600,
+          }}
+          onFinish={onFinish}
+          onFinishFailed={onFinishFailed}
+          autoComplete="off"
+        >
+          <Form.Item
+            label="Meta Title"
+            name="metaTitle"
+            rules={[
+              {
+                required: true,
+                message: "Please input your meta title!",
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            label="Meta Description"
+            name="metaDescription"
+            rules={[
+              {
+                required: true,
+                message: "Please input your meta description!",
+              },
+            ]}
+          >
+            <Input.TextArea rows={3} />
+          </Form.Item>
+
+          <Form.Item
+            label="Meta Keywords"
+            name="metaKeywords"
+            rules={[
+              {
+                required: true,
+                message: "Please input your meta keywords!",
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            label="Script"
+            name="script"
+            rules={[
+              {
+                required: true,
+                message: "Please input your script!",
+              },
+            ]}
+          >
+            <Input.TextArea rows={3} />
+          </Form.Item>
+
+          <Form.Item label={null}>
+            <Button
+              style={{ display: "flex", justifyContent: "right" }}
+              type="primary"
+              htmlType="submit"
+            >
+              Submit
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };
