@@ -11,6 +11,7 @@ import {
   Image,
   Table,
   Popconfirm,
+  Tag,
 } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { Storage } from "../../firebaseConfig";
@@ -22,7 +23,7 @@ import {
 } from "firebase/storage";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { blog } from "../../utils/axios";
+import { blog, seo } from "../../utils/axios";
 import "./blog.css";
 
 const { Step } = Steps;
@@ -58,7 +59,10 @@ function Blog1() {
   const [currentStep, setCurrentStep] = useState(0);
   const [percent, setPercent] = useState("");
   const [url, setUrl] = useState("");
-  const [uploadedImageUrl, setUploadedImageUrl] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState(null); // State to store the ID
+  const [keywords, setKeywords] = useState([]); // State to store the keywords as an array
+  const [form] = Form.useForm();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [headings, setHeadings] = useState([]);
@@ -101,6 +105,66 @@ function Blog1() {
           console.log(error.message);
         });
     }
+  };
+
+  const showModal = (id) => {
+    setIsModalOpen(true);
+    setSelectedId(id);
+    console.log(id)
+  };
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+  const onFinish = (values) => {
+    setIsModalOpen(false);
+    const token = localStorage.getItem("token");
+    console.log("SEO Data:", values);
+
+    const data1 = {
+      productId: selectedId,
+      title: values.metaTitle,
+      description: values.metaDescription,
+      keywords: keywords, // Use the keywords state array
+      script: values.script,
+    };
+
+    seo
+      .post("/", data1, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }) // Assuming the API endpoint is '/seo' for adding SEO data
+      .then(() => {
+        message.success("SEO data added successfully!");
+        form.resetFields(); // Reset the form fields after successful submission
+        setIsModalOpen(false); // Close the modal after successful submission
+      })
+      .catch((error) => {
+        message.error("Failed to add SEO data");
+        console.error("Error adding SEO data:", error);
+      });
+  };
+
+  const onFinishFailed = (errorInfo) => {
+    console.log("Failed:", errorInfo);
+  };
+
+  const handleAddKeyword = (e) => {
+    if (e.key === "Enter" && e.target.value) {
+      setKeywords((prevKeywords) => [...prevKeywords, e.target.value]);
+      e.target.value = ""; // Clear the input after adding
+    }
+  };
+
+  const handleDeleteKeyword = (keyword) => {
+    setKeywords((prevKeywords) =>
+      prevKeywords.filter((item) => item !== keyword)
+    );
   };
 
   useEffect(() => {
@@ -200,7 +264,7 @@ function Blog1() {
       console.log("Editing blog data:", blogToEdit);
       setTitle(blogToEdit.title || ""); // Blog title
       setDescription(blogToEdit.description || ""); // Blog description
-      setUrl(blogToEdit.image)
+      setUrl(blogToEdit.image);
       // Map titledescriptions to headings
       const mappedHeadings = (blogToEdit.titledescriptions || []).map(
         (item) => ({
@@ -290,6 +354,9 @@ function Blog1() {
               Delete
             </Button>
           </Popconfirm>
+          <Button type="primary" onClick={() => showModal(record.id)}>
+            Add SEO
+          </Button>
         </Space>
       ),
     },
@@ -445,6 +512,109 @@ function Blog1() {
         rowKey={(record, index) => index}
         pagination={false}
       />
+      <Modal
+        title="Add SEO Data"
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        footer={null}
+      >
+        <Form
+          name="seoForm"
+          labelCol={{
+            span: 6, // Adjust label width as per your need
+          }}
+          wrapperCol={{
+            span: 18, // Adjust input width as per your need
+          }}
+          style={{
+            maxWidth: 600,
+          }}
+          onFinish={onFinish}
+          onFinishFailed={onFinishFailed}
+          autoComplete="off"
+        >
+          <Form.Item
+            label="Meta Title"
+            name="metaTitle"
+            rules={[
+              {
+                required: true,
+                message: "Please input your meta title!",
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            label="Meta Description"
+            name="metaDescription"
+            rules={[
+              {
+                required: true,
+                message: "Please input your meta description!",
+              },
+            ]}
+          >
+            <Input.TextArea rows={3} />
+          </Form.Item>
+
+          <Form.Item
+            label="Meta Keywords"
+            name="metaKeywords"
+            rules={[
+              {
+                required: true,
+                message: "Please input your meta keywords!",
+              },
+            ]}
+          >
+            <Space direction="vertical">
+              {/* Displaying keywords as tags */}
+              <div>
+                {keywords.map((keyword, index) => (
+                  <Tag
+                    key={index}
+                    closable
+                    onClose={() => handleDeleteKeyword(keyword)}
+                  >
+                    {keyword}
+                  </Tag>
+                ))}
+              </div>
+              {/* Input for adding keywords */}
+              <Input
+                onKeyDown={handleAddKeyword}
+                placeholder="Press Enter to add a keyword"
+              />
+            </Space>
+          </Form.Item>
+
+          <Form.Item
+            label="Script"
+            name="script"
+            rules={[
+              {
+                required: true,
+                message: "Please input your script!",
+              },
+            ]}
+          >
+            <Input.TextArea rows={3} />
+          </Form.Item>
+
+          <Form.Item label={null}>
+            <Button
+              style={{ display: "flex", justifyContent: "right" }}
+              type="primary"
+              htmlType="submit"
+            >
+              Submit
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 }
